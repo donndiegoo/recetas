@@ -6,7 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
@@ -32,26 +37,45 @@ public class RecipesAdapter extends ArrayAdapter<Recipe> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        /*
-         * The convertView argument is essentially a "ScrapView" as described is Lucas post
-         * http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
-         * It will have a non-null value when ListView is asking you recycle the row layout.
-         * So, when convertView is not null, you should simply update its contents instead of inflating a new row layout.
-         */
+        ViewHolder holder;
+
         if(convertView==null){
             // inflate the layout
             LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
             convertView = inflater.inflate(layoutResourceId, parent, false);
+            holder = new ViewHolder();
+            holder.image = (ImageView) convertView.findViewById(R.id.info_image);
+            holder.text = (TextView) convertView.findViewById(R.id.info_text);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
         // object item based on the position
         Recipe objectItem = data[position];
 
-        // get the TextView and then set the text (item name) and tag (item ID) values
-        TextView textViewItem = (TextView) convertView.findViewById(R.id.info_text);
-        textViewItem.setText(objectItem.getTitle());
+        holder.text.setText(objectItem.getTitle());
+
+        String picturePath = objectItem.getFirstPicture();
+        if(picturePath.length() > 0)
+        {
+            // Trigger the download of the URL asynchronously into the image view.
+            Picasso.with(mContext)
+                    .load(new File(objectItem.getFirstPicture()))
+                    .resizeDimen(R.dimen.list_detail_image_size, R.dimen.list_detail_image_size)
+                    .centerInside()
+                    .tag(mContext)
+                    .into(holder.image);
+        }
+
+
 
         return convertView;
 
+    }
+
+    static class ViewHolder {
+        ImageView image;
+        TextView text;
     }
 }

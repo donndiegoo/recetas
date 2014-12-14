@@ -8,9 +8,8 @@ import java.util.List;
  */
 public class Recipe {
 
-
-
     private String mTitle;
+    private String mPath;
     private List<String> mListPictures;
 
     public Recipe()
@@ -27,6 +26,10 @@ public class Recipe {
     public void setTitle(String title) {
         mTitle = title;
     }
+
+    public String getPath() { return mPath;  }
+
+    public void setPath(String path) { mPath = path; }
 
     public List<String> getListPictures() {
         return mListPictures;

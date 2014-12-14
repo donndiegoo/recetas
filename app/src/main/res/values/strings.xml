@@ -8,11 +8,13 @@
     <string name="add_recipe_web">Enlace a una Web</string>
     <string name="add_recipe_document">Desde un archivo</string>
     <string name="add_recipe_camera">Tirar una foto</string>
-
     <string name="Upload">Sincronizar recetas</string>
     <string name="Error">Error</string>
     <string name="Complete">Comenzar</string>
     <string name="dropbox_syncrhonize">Sincronizar recetas</string>
-
+    <string name="title_activity_recipe_detail">RecipeDetailActivity</string>
+    <string name="step_by_step_ingridients">Ingredientes</string>
+    <string name="step_by_step_instructions">Instrucciones</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

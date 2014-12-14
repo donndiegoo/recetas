@@ -44,6 +44,8 @@ public class RecipesManager {
 
     public void loadRecipesFromCache() {
         try{
+            List<Recipe> temporaryList = new ArrayList<Recipe>();
+
             String recipesFolderNameLocal = MyApplication.mGeneralContext.getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY;
             File recipesFolder = new File(recipesFolderNameLocal);
 
@@ -52,6 +54,7 @@ public class RecipesManager {
             {
                 Recipe recipe = new Recipe();
                 recipe.setTitle(recipeFile.getName());
+                recipe.setPath(recipeFile.getAbsolutePath());
 
                 if (recipeFile.isDirectory()) {
                     File recipeDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.getName());
@@ -68,11 +71,20 @@ public class RecipesManager {
                                 }
                             }
                         }
+                        //TODO remove this
+                        else
+                        {
+                            recipe.setPath(recipeElement.getAbsolutePath());
+                        }
                     }
                 }
 
-                mListRecipes.add(recipe);
+                temporaryList.add(recipe);
             }
+
+            mListRecipes.clear();
+            mListRecipes.addAll(temporaryList);
+
             RecipesManager.getInstance().setListReceipes(mListRecipes);
         }
         catch (Exception e)

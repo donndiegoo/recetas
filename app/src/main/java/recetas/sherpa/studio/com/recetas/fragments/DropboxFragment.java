@@ -42,7 +42,7 @@ import recetas.sherpa.studio.com.recetas.utils.MyPreferences;
  * Created by diego on 13/12/14.
  */
 public class DropboxFragment extends Fragment{
-    private static final String TAG = "DBRoulette";
+    private static final String TAG = "DropboxFragment";
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ public class DropboxFragment extends Fragment{
     private static final String ACCESS_SECRET_NAME = "ACCESS_SECRET";
 
     private static final boolean USE_OAUTH1 = false;
-    private static final int MAX_NUMBER_RETRIES = 1;
+    private static final int MAX_NUMBER_RETRIES = 2;
 
     private DropboxAPI<AndroidAuthSession> mApi;
 
@@ -317,6 +317,7 @@ public class DropboxFragment extends Fragment{
                             if (recipeFile.isDir) {
                                 File recipeDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName());
                                 recipeDirectory.mkdir();
+                                recipe.setPath(recipeDirectory.getAbsolutePath());
 
                                 Entry recipeContent = mApi.metadata(recipeFile.path, 1000, null, true, null);
 
@@ -343,6 +344,8 @@ public class DropboxFragment extends Fragment{
                                         FileOutputStream outputStream = new FileOutputStream(filePath);
                                         DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/" + recipeElement.fileName(), null, outputStream, null);
                                         outputStream.close();
+                                        //TODO change this after
+                                        recipe.setPath(filePath);
                                     }
                                 }
                             } else {
@@ -350,6 +353,7 @@ public class DropboxFragment extends Fragment{
                                 FileOutputStream outputStream = new FileOutputStream(filePath);
                                 DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName(), null, outputStream, null);
                                 outputStream.close();
+                                recipe.setPath(filePath);
                             }
 
                             mListRecipes.add(recipe);
