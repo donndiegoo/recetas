@@ -1,0 +1,21 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    tools:context="recetas.sherpa.studio.com.recetas.fragments.RecipeDetailWebFragment">
+
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/webView"/>
+
+    <com.dd.CircularProgressButton
+        android:id="@+id/progress"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@color/white"
+        app:cpb_textError="@string/Error"
+        app:cpb_cornerRadius="32dp"
+        app:cpb_colorIndicatorBackground="@color/white"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>

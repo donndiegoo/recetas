@@ -1,8 +1,8 @@
 package recetas.sherpa.studio.com.recetas.fragments;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +12,13 @@ import android.webkit.WebViewClient;
 
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
-import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link RecipeDetailWebView#newInstance} factory method to
+ * Use the {@link RecipeDetailWebFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RecipeDetailWebView extends Fragment {
-    private static final String ARG_FILE_PATH = "arg_file_path";
+public class RecipeDetailWebFragment extends Fragment {
 
     private Recipe mRecipe;
 
@@ -30,28 +28,22 @@ public class RecipeDetailWebView extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param recipeIndex index of the recipe
+     * @param recipe recipe
      * @return A new instance of fragment RecipeDetailPDF.
      */
-    // TODO: Rename and change types and number of parameters
-    public static RecipeDetailWebView newInstance(int recipeIndex) {
-        RecipeDetailWebView fragment = new RecipeDetailWebView();
-        Bundle args = new Bundle();
-        args.putInt(ARG_FILE_PATH, recipeIndex);
-        fragment.setArguments(args);
+    public static RecipeDetailWebFragment newInstance(Recipe recipe) {
+        RecipeDetailWebFragment fragment = new RecipeDetailWebFragment();
+        fragment.setRecipe(recipe);
         return fragment;
     }
 
-    public RecipeDetailWebView() {
+    public RecipeDetailWebFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mRecipe = RecipesManager.getInstance().getListReceipes().get(getArguments().getInt(ARG_FILE_PATH));
-        }
     }
 
     @Override
@@ -86,4 +78,7 @@ public class RecipeDetailWebView extends Fragment {
         super.onDetach();
     }
 
+    public void setRecipe(Recipe recipe) {
+        mRecipe = recipe;
+    }
 }

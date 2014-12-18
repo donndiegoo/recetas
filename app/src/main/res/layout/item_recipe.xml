@@ -12,25 +12,24 @@
         card_view:cardCornerRadius="2dp">
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:weightSum="2">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/info_image"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
                 android:background="#DDDDDD"/>
 
             <TextView
                 android:id="@+id/info_text"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="TEST"
-                android:textSize="20sp"
-                android:padding="20dp"
+                android:textSize="14sp"
+                android:padding="10dp"
                 android:layout_weight="1" />
         </LinearLayout>
 

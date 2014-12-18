@@ -1,21 +1,41 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:padding="0dp"
     android:id="@+id/container"
     tools:context=".MainActivity$PlaceholderFragment">
 
+    <com.etsy.android.grid.StaggeredGridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="16dp"
+        android:paddingBottom="60dp"
+        android:clipToPadding="false"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        app:item_margin="8dp"
+        app:column_count="2"
+        app:grid_paddingLeft="0dp"
+        app:grid_paddingRight="0dp"/>
+
+    <!--
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="16dp"
+        android:paddingBottom="60dp"
+        android:clipToPadding="false"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:dividerHeight="8dp"
         android:divider="@android:color/transparent"
-        />
+        />-->
 
     <FrameLayout
         android:id="@+id/blur_image"
@@ -53,6 +73,7 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/white"
             fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_icon="@drawable/ic_www"
             fab:fab_title="@string/add_recipe_web"/>
 
         <recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionButton
