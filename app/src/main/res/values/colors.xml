@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="theme_color">@color/cyan_300</color>
-    <color name="theme_color_dark">@color/cyan_600</color>
+    <color name="theme_color">@color/amber_A700</color>
+    <color name="theme_color_dark">@color/amber_400</color>
+
+
     <color name="cyan_300">#4DD0E1</color>
     <color name="cyan_400">#26C6DA</color>
     <color name="cyan_500">#00BCD4</color>
     <color name="cyan_600">#00ACC1</color>
+
+    <color name="amber_400">#FFCA28</color>
+    <color name="amber_A700">#FFAB00</color>
+    <color name="amber_600">#FFB300</color>
+    <color name="amber_700">#FFA000</color>
+
+
     <color name="black">#000000</color>
     <color name="black_semi_transparent">#8C000000</color>
     <color name="background">#e5e5e5</color>

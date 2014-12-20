@@ -1,11 +1,8 @@
 package recetas.sherpa.studio.com.recetas.fragments;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,7 +16,6 @@ import com.dd.CircularProgressButton;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.android.AuthActivity;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
@@ -28,20 +24,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import recetas.sherpa.studio.com.recetas.Constants;
 import recetas.sherpa.studio.com.recetas.R;
-import recetas.sherpa.studio.com.recetas.activities.DropboxListener;
-import recetas.sherpa.studio.com.recetas.data.Recipe;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
+import recetas.sherpa.studio.com.recetas.helpers.DropboxListener;
+import recetas.sherpa.studio.com.recetas.helpers.TaskDropboxListener;
 import recetas.sherpa.studio.com.recetas.utils.MyPreferences;
 
 /**
  * Created by diego on 13/12/14.
  */
-public class DropboxFragment extends Fragment{
+public class DropboxFragment extends Fragment implements TaskDropboxListener {
     private static final String TAG = "DropboxFragment";
 
 
@@ -55,21 +49,21 @@ public class DropboxFragment extends Fragment{
     private static final String ACCESS_SECRET_NAME = "ACCESS_SECRET";
 
     private static final boolean USE_OAUTH1 = false;
-    private static final int MAX_NUMBER_RETRIES = 2;
 
-    private DropboxAPI<AndroidAuthSession> mApi;
+    private DropboxAPI<AndroidAuthSession>  mApi;
+    private Entry                           mRecipesContent;
 
     private String mApiKey;
     private String mApiSecret;
 
-    private int mNumberRetries;
     private boolean mLoggedIn;
-    private boolean mRecipesLoaded;
 
     // Android widgets
     private View   mRootView;
     private CircularProgressButton mSubmit;
 
+    private AsyncTask mAsyncTaskRecipes;
+    private AsyncTask mAsyncTaskChanges;
     private DropboxListener mListener;
 
 
@@ -77,20 +71,12 @@ public class DropboxFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mNumberRetries = 0;
-
-        mApiKey = getActivity().getResources().getString(R.string.dropbox_api_key);
-        mApiSecret = getActivity().getResources().getString(R.string.dropbox_api_secret);
+        mApiKey              = getActivity().getResources().getString(R.string.dropbox_api_key);
+        mApiSecret           = getActivity().getResources().getString(R.string.dropbox_api_secret);
 
         // We create a new AuthSession so that we can use the Dropbox API.
         AndroidAuthSession session = buildSession();
         mApi = new DropboxAPI<AndroidAuthSession>(session);
-        if(mLoggedIn)
-        {
-            getRecipes();
-        }
-
-        checkAppKeySetup();
 
     }
 
@@ -101,43 +87,39 @@ public class DropboxFragment extends Fragment{
 
         mSubmit = (CircularProgressButton) mRootView.findViewById(R.id.auth_button);
         mSubmit.setIndeterminateProgressMode(true);
-        // Display the proper UI state if logged in or not
-        setLoggedIn(mApi.getSession().isLinked());
-
         mSubmit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // This logs you out if you're logged in, or vice versa
                 if (mLoggedIn) {
-
-                    if(mRecipesLoaded || mNumberRetries == MAX_NUMBER_RETRIES)
-                    {
-                        if(mListener != null)
-                        {
-                            mListener.onRecipesLoaded();
-                        }
-                    }
-                    else
-                    {
-                        mNumberRetries++;
-                        getRecipes();
-                    }
-
-
+                    getRecipes(mRecipesContent);
                 } else {
-                    mSubmit.setProgress(50); // set progress > 0 & < 100 to display indeterminate progress
-                    // Start the remote authentication
-                    if (USE_OAUTH1) {
-                        mApi.getSession().startAuthentication(getActivity());
-                    } else {
-                        mApi.getSession().startOAuth2Authentication(getActivity());
-                    }
+                    doLogin();
                 }
             }
         });
 
-
+        // Display the proper UI state if logged in or not
+        mLoggedIn = mApi.getSession().isLinked();
+        if(!mLoggedIn)
+        {
+            doLogin();
+        }
+        else
+        {
+            checkRecipesChanges();
+        }
 
         return mRootView;
+    }
+
+    private void doLogin() {
+        mSubmit.setProgress(50); // set progress > 0 & < 100 to display indeterminate progress
+        // Start the remote authentication
+        if (USE_OAUTH1) {
+            mApi.getSession().startAuthentication(getActivity());
+        } else {
+            mApi.getSession().startOAuth2Authentication(getActivity());
+        }
     }
 
     @Override
@@ -154,13 +136,30 @@ public class DropboxFragment extends Fragment{
                 session.finishAuthentication();
                 // Store it locally in our app for later use
                 storeAuth(session);
-                setLoggedIn(true);
-                getRecipes();
+                mLoggedIn = true;
+                checkRecipesChanges();
             } catch (IllegalStateException e) {
                 showToast("Couldn't authenticate with Dropbox:" + e.getLocalizedMessage());
                 Log.i(TAG, "Error authenticating", e);
             }
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAsyncTaskRecipes != null && mAsyncTaskRecipes.getStatus() == AsyncTask.Status.RUNNING){
+            mAsyncTaskRecipes.cancel(true);
+        }
+        if(mAsyncTaskChanges != null && mAsyncTaskChanges.getStatus() == AsyncTask.Status.RUNNING)
+        {
+            mAsyncTaskChanges.cancel(true);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     public void setListener(DropboxListener listener)
@@ -175,36 +174,7 @@ public class DropboxFragment extends Fragment{
         // Clear our stored keys
         clearKeys();
         // Change UI state to display logged out version
-        setLoggedIn(false);
-    }
-
-    /**
-     * Convenience function to change UI state based on being logged in
-     */
-    private void setLoggedIn(boolean loggedIn) {
-        mLoggedIn = loggedIn;
-        if (loggedIn) {
-            //mSubmit.setText(getActivity().getResources().getString(R.string.dropbox_unlink));
-
-        } else {
-            //mSubmit.setText(getActivity().getResources().getString(R.string.dropbox_syncrhonize));
-        }
-    }
-
-    private void checkAppKeySetup() {
-
-        // Check if the app has set up its manifest properly.
-        Intent testIntent = new Intent(Intent.ACTION_VIEW);
-        String scheme = "db-" + mApiKey;
-        String uri = scheme + "://" + AuthActivity.AUTH_VERSION + "/test";
-        testIntent.setData(Uri.parse(uri));
-        PackageManager pm = getActivity().getPackageManager();
-        if (0 == pm.queryIntentActivities(testIntent, 0).size()) {
-            showToast("URL scheme in your app's " +
-                    "manifest is not set up correctly. You should have a " +
-                    "com.dropbox.client2.android.AuthActivity with the " +
-                    "scheme: " + scheme);
-        }
+        mLoggedIn = false;
     }
 
     private void showToast(String msg) {
@@ -276,136 +246,63 @@ public class DropboxFragment extends Fragment{
         return session;
     }
 
-    public void getRecipes()
+    private void checkRecipesChanges()
     {
-        (new AsyncTask<Void,Void,Boolean>(){
+        if(RecipesManager.getInstance().getListReceipes().isEmpty())
+        {
+           mRootView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mRootView.setVisibility(View.INVISIBLE);
+        }
 
-            private boolean mResult;
-            List<Recipe> mListRecipes;
+        mAsyncTaskChanges = new TaskChanges(this);
+        mAsyncTaskChanges.execute();
+    }
 
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                mSubmit.setProgress(50); // Start progress
-                mResult = true;
-                mRecipesLoaded = false;
-                mListRecipes = new ArrayList<Recipe>();
-            }
+    @Override
+    public void onChangesTaskFinished(Object... result) {
+        if(result.length > 0) // Recipes did change
+        {
+            mAsyncTaskRecipes = new TaskRecipes(DropboxFragment.this, (Entry) result[0]);
+            mAsyncTaskRecipes.execute();
+        }
+        else
+        {
+            mSubmit.setProgress(100);
+            refreshRecipes(false);
+        }
+    }
 
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                try{
-                    RecipesManager.getInstance().loadRecipesFromCache(); // Load cache just in case
+    @Override
+    public void onRecipesTaskFinsihted(boolean result) {
+        if(result)
+        {
+            refreshRecipes(true);
+        }
+        else
+        {
+            //TODO show error
+            mSubmit.setProgress(-1);
+        }
+    }
 
-                    String recipesFolderNameLocal = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY + "_aux";
-                    String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
+    private void refreshRecipes(boolean changed)
+    {
+       mRootView.setVisibility(View.INVISIBLE);
+        if(mListener != null)
+        {
+            mListener.onRecipesLoaded(changed);
+        }
+    }
 
-                    File file = new File(recipesFolderNameLocal);
-                    if(file.exists()){
-                        deleteFile(recipesFolderNameLocal);
-                    }
-                    file.mkdir();
 
-                    Entry recipesContent = mApi.metadata(recipesFolderNameRemote, 1000, null, true, null);
 
-                    boolean recipesHasChanged = hasRecipesChanged(recipesContent.hash); // Check hash
-                    if(recipesHasChanged) {
-                        for (Entry recipeFile : recipesContent.contents) {
-                            Recipe recipe = new Recipe();
-                            recipe.setTitle(recipeFile.fileName());
-
-                            if (recipeFile.isDir) {
-                                File recipeDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName());
-                                recipeDirectory.mkdir();
-                                recipe.setPath(recipeDirectory.getAbsolutePath());
-
-                                Entry recipeContent = mApi.metadata(recipeFile.path, 1000, null, true, null);
-
-                                for (Entry recipeElement : recipeContent.contents) {
-                                    if (recipeElement.isDir && recipeElement.fileName().equals("Imagenes")) {
-                                        Entry imagesContent = mApi.metadata(recipeElement.path, 1000, null, true, null);
-
-                                        if (imagesContent.contents.size() > 0) {
-                                            File imagesDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName() + "/" + "Imagenes");
-                                            imagesDirectory.mkdir();
-
-                                            for (Entry imageElement : imagesContent.contents) {
-                                                if (!imageElement.isDir) {
-                                                    String imagePath = recipesFolderNameLocal + "/" + recipeFile.fileName() + "/Imagenes/" + imageElement.fileName();
-                                                    FileOutputStream outputStream = new FileOutputStream(imagePath);
-                                                    DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/Imagenes/" + imageElement.fileName(), null, outputStream, null);
-                                                    outputStream.close();
-                                                    recipe.addPicture(imagePath);
-                                                }
-                                            }
-                                        }
-                                    } else if (!recipeElement.isDir) {
-                                        String filePath = recipesFolderNameLocal + "/" + recipeFile.fileName() + "/" + recipeElement.fileName();
-                                        FileOutputStream outputStream = new FileOutputStream(filePath);
-                                        DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/" + recipeElement.fileName(), null, outputStream, null);
-                                        outputStream.close();
-                                        //TODO change this after
-                                        recipe.setPath(filePath);
-                                    }
-                                }
-                            } else {
-                                String filePath = recipesFolderNameLocal + "/" + recipeFile.fileName();
-                                FileOutputStream outputStream = new FileOutputStream(filePath);
-                                DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName(), null, outputStream, null);
-                                outputStream.close();
-                                recipe.setPath(filePath);
-                            }
-
-                            mListRecipes.add(recipe);
-                        }
-
-                        RecipesManager.getInstance().setListReceipes(mListRecipes);
-                        if(mListRecipes.size() > 0)
-                        {
-                            MyPreferences.setRecipesHash(getActivity(),recipesContent.hash);
-                            moveTemporaryRecipesToRealRecipes();
-                        }
-
-                        return mResult;
-
-                    }
-                    // Recipes did not change since last call
-                    else
-                    {
-                        return mResult;
-                    }
-                }
-                catch(DropboxException e)
-                {
-                    Log.d(TAG,e.getMessage());
-                    mResult = false;
-                }
-                catch(FileNotFoundException e)
-                {
-                    Log.d(TAG,e.getMessage());
-                    mResult = false;
-                }
-                catch (IOException e)
-                {
-                    Log.d(TAG,e.getMessage());
-                    mResult = false;
-                }
-                catch (Exception e)
-                {
-                    Log.d(TAG,e.getMessage());
-                    mResult = false;
-                }
-
-                return mResult;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                super.onPostExecute(result);
-                mSubmit.setProgress(result ? 100 : -1);
-                mRecipesLoaded = result;
-            }
-        }).execute();
+    private void getRecipes(Entry recipesContent)
+    {
+        mAsyncTaskRecipes = new TaskRecipes(this,recipesContent);
+        mAsyncTaskRecipes.execute();
     }
 
     private void moveTemporaryRecipesToRealRecipes() {
@@ -434,7 +331,7 @@ public class DropboxFragment extends Fragment{
         return !hash.equals(lastHash);
     }
 
-    public void deleteFile(String folderPath)
+    private void deleteFile(String folderPath)
     {
         File dir = new File(folderPath);
         if (dir.isDirectory()) {
@@ -450,4 +347,158 @@ public class DropboxFragment extends Fragment{
         }
     }
 
+    private class TaskChanges extends AsyncTask<Object,Object,Object>
+    {
+        private TaskDropboxListener mListener;
+        private boolean             mHasChanged;
+
+        public TaskChanges(TaskDropboxListener listener) {
+
+            mListener = listener;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mHasChanged = false;
+            mSubmit.setProgress(50); // Start progress
+        }
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+            try {
+                String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
+                mRecipesContent = mApi.metadata(recipesFolderNameRemote, 1000, null, true, null);
+                mHasChanged = hasRecipesChanged(mRecipesContent.hash); // Check hash
+            }
+            catch(DropboxException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            if(mHasChanged)
+            {
+                mListener.onChangesTaskFinished(mRecipesContent);
+            }
+            else{
+                mListener.onChangesTaskFinished();
+            }
+
+        }
+    }
+
+    private class TaskRecipes extends AsyncTask<Object,Object,Boolean> {
+
+        private TaskDropboxListener mListener;
+        private Entry mRecipesContent;
+
+        public TaskRecipes(TaskDropboxListener listener, Entry recipesContent) {
+            mListener = listener;
+            mRecipesContent = recipesContent;
+        }
+
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mSubmit.setProgress(50); // Start progress
+        }
+
+        @Override
+        protected Boolean doInBackground(Object... params) {
+
+            boolean result = true;
+
+            try{
+
+                String recipesFolderNameLocal = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY + "_aux";
+                String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
+
+                File file = new File(recipesFolderNameLocal);
+                if(file.exists()){
+                    deleteFile(recipesFolderNameLocal);
+                }
+                file.mkdir();
+
+                if(mRecipesContent == null)
+                {
+                    mRecipesContent = mApi.metadata(recipesFolderNameRemote, 1000, null, true, null);
+                }
+
+                for (Entry recipeFile : mRecipesContent.contents) {
+                    if (recipeFile.isDir) {
+                        File recipeDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName());
+                        recipeDirectory.mkdir();
+
+                        Entry recipeContent = mApi.metadata(recipeFile.path, 1000, null, true, null);
+
+                        for (Entry recipeElement : recipeContent.contents) {
+                            if (recipeElement.isDir && recipeElement.fileName().equals("Imagenes")) {
+                                Entry imagesContent = mApi.metadata(recipeElement.path, 1000, null, true, null);
+
+                                if (imagesContent.contents.size() > 0) {
+                                    File imagesDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName() + "/" + "Imagenes");
+                                    imagesDirectory.mkdir();
+
+                                    for (Entry imageElement : imagesContent.contents) {
+                                        if (!imageElement.isDir) {
+                                            String imagePath = recipesFolderNameLocal + "/" + recipeFile.fileName() + "/Imagenes/" + imageElement.fileName();
+                                            FileOutputStream outputStream = new FileOutputStream(imagePath);
+                                            DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/Imagenes/" + imageElement.fileName(), null, outputStream, null);
+                                            outputStream.close();
+                                        }
+                                    }
+                                }
+                            } else if (!recipeElement.isDir) {
+                                String filePath = recipesFolderNameLocal + "/" + recipeFile.fileName() + "/" + recipeElement.fileName();
+                                FileOutputStream outputStream = new FileOutputStream(filePath);
+                                DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/" + recipeElement.fileName(), null, outputStream, null);
+                                outputStream.close();
+                            }
+                        }
+                    }
+                }
+
+                MyPreferences.setRecipesHash(getActivity(),mRecipesContent.hash);
+                moveTemporaryRecipesToRealRecipes();
+
+            }
+            catch(DropboxException e)
+            {
+                Log.d(TAG,e.getMessage());
+                result = false;
+            }
+            catch(FileNotFoundException e)
+            {
+                Log.d(TAG,e.getMessage());
+                result = false;
+            }
+            catch (IOException e)
+            {
+                Log.d(TAG,e.getMessage());
+                result = false;
+            }
+            catch (Exception e)
+            {
+                Log.d(TAG,e.getMessage());
+                result = false;
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(mListener != null)
+            {
+                mListener.onRecipesTaskFinsihted(result);
+            }
+        }
+    }
 }

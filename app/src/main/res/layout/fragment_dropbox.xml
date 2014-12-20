@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#88ffffff"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <com.dd.CircularProgressButton
         android:id="@+id/auth_button"
         android:layout_width="196dp"
         android:layout_height="64dp"
-        android:layout_marginBottom="15dp"
         android:textColor="@color/white"
         android:textSize="18sp"
+        android:layout_centerInParent="true"
         app:cpb_textComplete="@string/Complete"
         app:cpb_textError="@string/Error"
         app:cpb_textIdle="@string/Upload"
+        app:cpb_selectorIdle="@drawable/idl_state_selector"
         app:cpb_cornerRadius="32dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        app:cpb_colorIndicator="@color/theme_color"
+        app:cpb_colorIndicatorBackground="@color/white"/>
 </RelativeLayout>

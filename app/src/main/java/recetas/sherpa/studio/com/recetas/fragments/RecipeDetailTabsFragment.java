@@ -14,7 +14,6 @@ import recetas.sherpa.studio.com.recetas.widgets.SlidingTab.SlidingTabsBasicFrag
  */
 public class RecipeDetailTabsFragment extends SlidingTabsBasicFragment{
 
-    private RecipeStepByStep mRecipe;
 
 
     public void setRecipe(RecipeStepByStep recipe)
@@ -35,7 +34,7 @@ public class RecipeDetailTabsFragment extends SlidingTabsBasicFragment{
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecipeDetailTabsAdapter adapter = new RecipeDetailTabsAdapter(getActivity(), mRecipe);
+        RecipeDetailTabsAdapter adapter = new RecipeDetailTabsAdapter(getActivity(), (RecipeStepByStep) mRecipe);
         SlidingTabLayout.TabColorizer colorizer = new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {

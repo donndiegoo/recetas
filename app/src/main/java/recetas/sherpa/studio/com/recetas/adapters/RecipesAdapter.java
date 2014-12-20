@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.List;
 
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
@@ -23,15 +24,13 @@ public class RecipesAdapter extends ArrayAdapter<Recipe> {
 
     Context mContext;
     int layoutResourceId;
-    Recipe data[] = null;
 
-    public RecipesAdapter(Context mContext, int layoutResourceId, Recipe[] data) {
+    public RecipesAdapter(Context mContext, int layoutResourceId, List<Recipe> data) {
 
         super(mContext, layoutResourceId, data);
 
         this.layoutResourceId = layoutResourceId;
         this.mContext = mContext;
-        this.data = data;
     }
 
     @Override
@@ -52,13 +51,14 @@ public class RecipesAdapter extends ArrayAdapter<Recipe> {
         }
 
         // object item based on the position
-        Recipe objectItem = data[position];
+        Recipe objectItem = getItem(position);
 
         holder.text.setText(objectItem.getTitle());
 
         String picturePath = objectItem.getFirstPicture();
         if(picturePath.length() > 0)
         {
+            holder.image.setVisibility(View.VISIBLE);
             // Trigger the download of the URL asynchronously into the image view.
             Picasso.with(mContext)
                     .load(new File(objectItem.getFirstPicture()))
@@ -66,6 +66,11 @@ public class RecipesAdapter extends ArrayAdapter<Recipe> {
                     .centerInside()
                     .tag(mContext)
                     .into(holder.image);
+        }
+        else
+        {
+            holder.image.setImageBitmap(null);
+            holder.image.setVisibility(View.GONE);
         }
 
 

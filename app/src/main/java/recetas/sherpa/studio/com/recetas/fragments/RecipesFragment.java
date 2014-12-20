@@ -12,13 +12,21 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
+
+import com.etsy.android.grid.StaggeredGridView;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
+import com.nispok.snackbar.listeners.ActionClickListener;
+
+import java.util.List;
 
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.activities.RecipeDetailActivity;
 import recetas.sherpa.studio.com.recetas.adapters.RecipesAdapter;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
+import recetas.sherpa.studio.com.recetas.helpers.DropboxListener;
 import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenu;
 import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenuButtonListener;
 
@@ -26,18 +34,20 @@ import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingAc
 /**
  * Created by diego on 11/12/14.
  */
-public class RecipesFragment extends Fragment implements FloatingActionsMenuButtonListener{
+public class RecipesFragment extends Fragment implements FloatingActionsMenuButtonListener, DropboxListener {
 
     private static final int READ_REQUEST_CODE = 42;
     private static final String TAG = "RecipesFragment";
 
     private FrameLayout mBlurImage;
 
-    private View mRootView;
-    private ListView mListView;
-    private FloatingActionsMenu mAddButton;
+    private View                    mRootView;
+    private StaggeredGridView       mListView;
+    private FloatingActionsMenu     mAddButton;
+    private DropboxFragment         mDropboxFragment;
 
-    private Recipe[] mListRecipes;
+    private List<Recipe>            mListRecipes;
+    private  RecipesAdapter         mAdapter;
 
     public RecipesFragment() {
     }
@@ -47,16 +57,20 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mListRecipes = RecipesManager.getInstance().getListReceipes().toArray(new Recipe[0]);
+        RecipesManager.getInstance().loadRecipesFromCache();
+        mListRecipes = RecipesManager.getInstance().getListReceipes();
 
-        mListView = (ListView) mRootView.findViewById(R.id.listView);
-        RecipesAdapter adapter = new RecipesAdapter(getActivity(),R.layout.item_recipe,mListRecipes);
-        mListView.setAdapter(adapter);
+        mListView = (StaggeredGridView) mRootView.findViewById(R.id.grid_view);
+        mAdapter = new RecipesAdapter(getActivity(),R.layout.item_recipe,mListRecipes);
+        mListView.setAdapter(mAdapter);
 
         mRootView.findViewById(R.id.container);
         mBlurImage = (FrameLayout) mRootView.findViewById(R.id.blur_image);
         mAddButton = (FloatingActionsMenu) mRootView.findViewById(R.id.multiple_actions);
         mAddButton.setListener(this);
+
+        mDropboxFragment = (DropboxFragment) getActivity().getFragmentManager().findFragmentById(R.id.dropbox_fragment);
+        mDropboxFragment.setListener(this);
 
         mRootView.findViewById(R.id.add_file).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +82,7 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RecipeDetailActivity.startActivity(getActivity(),position);
+                RecipeDetailActivity.startActivity(getActivity(), position);
             }
         });
 
@@ -138,6 +152,39 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
                 uri = resultData.getData();
                 Log.i(TAG, "Uri: " + uri.toString());
             }
+        }
+    }
+
+    @Override
+    public void onRecipesLoaded(boolean changed) {
+        if(changed)
+        {
+            if(mListRecipes.isEmpty())
+            {
+                RecipesManager.getInstance().loadRecipesFromCache();
+                mAdapter.notifyDataSetChanged();
+            }
+            else
+            {
+                SnackbarManager.show(
+                        Snackbar.with(getActivity().getApplicationContext()) // context
+                                .type(SnackbarType.MULTI_LINE) // Set is as a multi-line snackbar
+                                .text("Hay nuevas recetas. Deseas mostrar los cambios?") // text to display
+                                .actionLabel("Aceptar") // action button label
+                                .actionListener(new ActionClickListener() {
+                                    @Override
+                                    public void onActionClicked(Snackbar snackbar) {
+
+                                        RecipesManager.getInstance().loadRecipesFromCache();
+                                        mAdapter.notifyDataSetChanged();
+
+                                    }
+                                }) // action button's ActionClickListener
+                                .swipeToDismiss(true)
+                        , this.getActivity()); // activity where it is displayed
+            }
+
+
         }
     }
 }

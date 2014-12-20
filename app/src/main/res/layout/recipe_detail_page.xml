@@ -9,7 +9,10 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/list_ingridients"
+        android:id="@+id/list_step_by_step"
         android:dividerHeight="0dp"
-        android:divider="@drawable/transparent_pixel" />
+        android:divider="@drawable/transparent_pixel"
+        android:paddingTop="0dp"
+        android:paddingBottom="50dp"
+        android:clipToPadding="false"/>
 </LinearLayout>

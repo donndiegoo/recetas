@@ -23,20 +23,6 @@
         app:grid_paddingLeft="0dp"
         app:grid_paddingRight="0dp"/>
 
-    <!--
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="16dp"
-        android:paddingBottom="60dp"
-        android:clipToPadding="false"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:dividerHeight="8dp"
-        android:divider="@android:color/transparent"
-        />-->
-
     <FrameLayout
         android:id="@+id/blur_image"
         android:visibility="invisible"
@@ -95,5 +81,12 @@
             fab:fab_title="@string/add_recipe_camera"/>
 
         </recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenu>
+
+    <fragment
+        android:id="@+id/dropbox_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="recetas.sherpa.studio.com.recetas.fragments.DropboxFragment"
+        tools:layout="@layout/fragment_dropbox" />
 
 </RelativeLayout>

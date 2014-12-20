@@ -2,20 +2,28 @@ package recetas.sherpa.studio.com.recetas.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import recetas.sherpa.studio.com.recetas.R;
-import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailWebView;
+import recetas.sherpa.studio.com.recetas.data.Recipe;
+import recetas.sherpa.studio.com.recetas.data.RecipeFile;
+import recetas.sherpa.studio.com.recetas.data.RecipeStepByStep;
+import recetas.sherpa.studio.com.recetas.data.RecipesManager;
+import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailExternalAppFragment;
+import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailTabsFragment;
+import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailWebFragment;
 
 public class RecipeDetailActivity extends ActionBarActivity {
 
     private static final String ARG_RECIPE_INDEX = "arg_recipe_index";
 
-    private int mRecipeIndex;
+    private Recipe mRecipe;
 
     public static void startActivity(Context context, int recipeIndex)
     {
@@ -36,18 +44,40 @@ public class RecipeDetailActivity extends ActionBarActivity {
             Bundle bundle = getIntent().getExtras();
             if(bundle != null)
             {
-                mRecipeIndex = bundle.getInt(ARG_RECIPE_INDEX);
+                int recipeIndex = bundle.getInt(ARG_RECIPE_INDEX);
+                mRecipe = RecipesManager.getInstance().getListReceipes().get(recipeIndex);
+
+                getSupportActionBar().setTitle(mRecipe.getTitle());
+
+                Fragment fragment = null;
+
+                if(mRecipe instanceof RecipeFile)
+                {
+                    if(((RecipeFile) mRecipe).getFilePath().endsWith(".html"))
+                    {
+                        fragment = RecipeDetailWebFragment.newInstance((RecipeFile)mRecipe);
+                    }
+                    else
+                    {
+                        fragment = RecipeDetailExternalAppFragment.newInstance((RecipeFile) mRecipe);
+                    }
+                }
+                else if(mRecipe instanceof  RecipeStepByStep)
+                {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    fragment = RecipeDetailTabsFragment.newInstance((RecipeStepByStep) mRecipe);
+                }
+                else
+                {
+
+                }
+
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-                RecipeDetailWebView fragment = RecipeDetailWebView.newInstance(mRecipeIndex);
-
-                //SlidingTabsBasicFragment fragment = new SlidingTabsBasicFragment();
                 transaction.replace(R.id.sample_content_fragment, fragment);
                 transaction.commit();
             }
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -64,7 +94,10 @@ public class RecipeDetailActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_delete) {
+            return true;
+        }
+        else if (id == R.id.action_edit) {
             return true;
         }
 

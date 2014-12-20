@@ -6,10 +6,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/ingridients_section"
+        android:id="@+id/instructions_textview"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="10dp"
-        android:layout_gravity="left" />
+        android:layout_gravity="center"
+        android:textSize="18sp"
+        android:gravity="center_horizontal"/>
 </FrameLayout>

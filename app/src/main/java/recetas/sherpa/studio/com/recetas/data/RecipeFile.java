@@ -5,13 +5,13 @@ package recetas.sherpa.studio.com.recetas.data;
  */
 public class RecipeFile extends Recipe{
 
-    private String mFileHtmlPath;
+    private String mFilePath;
 
     public RecipeFile(){
         super();
-        mFileHtmlPath = "";
+        mFilePath = "";
     }
-    public String getFileHtmlPath() {return mFileHtmlPath;}
+    public String getFilePath() {return mFilePath;}
 
-    public void setFileHtmlPath(String path){ mFileHtmlPath = path;}
+    public void setFilePath(String path){ mFilePath = path;}
 }

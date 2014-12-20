@@ -2,13 +2,10 @@ package recetas.sherpa.studio.com.recetas.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -22,7 +19,7 @@ import recetas.sherpa.studio.com.recetas.data.RecipeStepByStep;
 public class InstructionsAdapter extends ArrayAdapter<String> {
 
 
-    private final int  TYPE_INGRIDIENT = 1;
+    private final int  TYPE_INSTRUCTION = 1;
     private final int  TYPE_SECTION = 0;
 
     Context mContext;
@@ -44,7 +41,7 @@ public class InstructionsAdapter extends ArrayAdapter<String> {
         String ingridient = getItem(position);
         if(ingridient.startsWith(RecipeStepByStep.INGRIDIENT_STARTER))
         {
-            return TYPE_INGRIDIENT;
+            return TYPE_INSTRUCTION;
         }
         else
         {
@@ -55,9 +52,9 @@ public class InstructionsAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        if(getItemViewType(position) == TYPE_INGRIDIENT)
+        if(getItemViewType(position) == TYPE_INSTRUCTION)
         {
-            return getViewIngridient(position, convertView,parent);
+            return getViewInstruction(position, convertView, parent);
         }
         else
         {
@@ -66,17 +63,17 @@ public class InstructionsAdapter extends ArrayAdapter<String> {
     }
 
     private View getViewSection(int position, View convertView, ViewGroup parent) {
-        final ViewHolderSection holder;
+        final ViewHolder holder;
 
         if(convertView==null){
             // inflate the layout
             LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-            convertView = inflater.inflate(R.layout.item_ingridient_section, parent, false);
-            holder = new ViewHolderSection();
-            holder.textView = (TextView) convertView.findViewById(R.id.ingridients_section);
+            convertView = inflater.inflate(R.layout.item_instructions_sections, parent, false);
+            holder = new ViewHolder();
+            holder.textView = (TextView) convertView.findViewById(R.id.instructions_section);
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolderSection) convertView.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
 
         // object item based on the position
@@ -87,47 +84,29 @@ public class InstructionsAdapter extends ArrayAdapter<String> {
         return convertView;
     }
 
-    private View getViewIngridient(int position, View convertView, ViewGroup parent) {
-        final ViewHolderIngridient holder;
+    private View getViewInstruction(int position, View convertView, ViewGroup parent) {
+        final ViewHolder holder;
 
         if(convertView==null){
             // inflate the layout
             LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
             convertView = inflater.inflate(mLayoutResourceId, parent, false);
-            holder = new ViewHolderIngridient();
-            holder.checkbox = (CheckBox) convertView.findViewById(R.id.ingridient_checkBox);
+            holder = new ViewHolder();
+            holder.textView = (TextView) convertView.findViewById(R.id.instructions_textview);
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolderIngridient) convertView.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
 
         // object item based on the position
         String objectItem = getItem(position);
 
-        holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if(isChecked)
-                {
-                    holder.checkbox.setPaintFlags(holder.checkbox.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                }
-                else {
-                    holder.checkbox.setPaintFlags(holder.checkbox.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-                }
-            }
-        });
-
-        holder.checkbox.setText(objectItem);
+        holder.textView.setText(objectItem.substring(1).trim());
 
         return convertView;
     }
 
-    static class ViewHolderIngridient {
-        CheckBox checkbox;
-    }
-
-    static class ViewHolderSection {
+    static class ViewHolder {
         TextView textView;
     }
 }

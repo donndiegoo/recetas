@@ -50,36 +50,62 @@ public class RecipesManager {
             File recipesFolder = new File(recipesFolderNameLocal);
 
 
-            for (File recipeFile : recipesFolder.listFiles())
+            for (File recipeDirectory : recipesFolder.listFiles())
             {
-                Recipe recipe = new Recipe();
-                recipe.setTitle(recipeFile.getName());
-                recipe.setPath(recipeFile.getAbsolutePath());
+                if (recipeDirectory.isDirectory()) {
 
-                if (recipeFile.isDirectory()) {
-                    File recipeDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.getName());
+                    Recipe recipe = null;
+                    List<String> images = new ArrayList<>();
+
                     for (File recipeElement : recipeDirectory.listFiles()) {
                         if (recipeElement.isDirectory() && recipeElement.getName().equals("Imagenes")) {
-                            if (recipeElement.listFiles().length > 0) {
-                                File imagesDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.getName() + "/" + "Imagenes");
-
-                                for (File imageElement : imagesDirectory.listFiles()) {
-                                    if (!imageElement.isDirectory()) {
-                                        String imagePath = recipesFolderNameLocal + "/" + recipeFile.getName() + "/Imagenes/" + imageElement.getName();
-                                        recipe.addPicture(imagePath);
-                                    }
-                                }
+                            for (File imageElement : recipeElement.listFiles()) {
+                                String imagePath = imageElement.getAbsolutePath();
+                                images.add(imagePath);
                             }
                         }
-                        //TODO remove this
                         else
                         {
-                            recipe.setPath(recipeElement.getAbsolutePath());
+                            if(recipeElement.getName().endsWith(".txt"))
+                            {
+                                recipe = new RecipeStepByStep();
+                                ((RecipeStepByStep)recipe).parseListIngridientsAndInstructions(recipeElement);
+                            }
+                            else if(recipeElement.getName().endsWith(".html"))
+                            {
+                                recipe = new RecipeFile();
+                                ((RecipeFile)recipe).setFilePath(recipeElement.getAbsolutePath());
+                            }
+                            else if(recipeElement.getName().endsWith(".pdf"))
+                            {
+                                recipe = new RecipeFile();
+                                ((RecipeFile)recipe).setFilePath(recipeElement.getAbsolutePath());
+                            }
+                            else if(recipeElement.getName().endsWith(".doc"))
+                            {
+                                recipe = new RecipeFile();
+                                ((RecipeFile)recipe).setFilePath(recipeElement.getAbsolutePath());
+                            }
+                            else if(recipeElement.getName().endsWith(".docx"))
+                            {
+                                recipe = new RecipeFile();
+                                ((RecipeFile)recipe).setFilePath(recipeElement.getAbsolutePath());
+                            }
+                            else
+                            {
+                                recipe = new Recipe();
+                                recipe.setPath(recipeElement.getAbsolutePath());
+                            }
                         }
                     }
-                }
 
-                temporaryList.add(recipe);
+                    if(recipe != null)
+                    {
+                        recipe.setTitle(recipeDirectory.getName());
+                        recipe.setListPictures(images);
+                        temporaryList.add(recipe);
+                    }
+                }
             }
 
             mListRecipes.clear();

@@ -95,12 +95,14 @@ public class RecipeDetailTabsAdapter extends PagerAdapter{
     }
 
     private void configureViewInstructions(View view) {
-
+        ListView listViewIngridients = (ListView) view.findViewById(R.id.list_step_by_step);
+        InstructionsAdapter adapter = new InstructionsAdapter(mContext,R.layout.item_instructions,mRecipe.getListInstructions());
+        listViewIngridients.setAdapter(adapter);
     }
 
     private void configureViewIngridients(View view) {
-        ListView listViewIngridients = (ListView) view.findViewById(R.id.list_ingridients);
-        IngridientsAdapter adapter = new IngridientsAdapter(mContext,R.layout.item_ingridient,mRecipe.getmListIngridients());
+        ListView listViewIngridients = (ListView) view.findViewById(R.id.list_step_by_step);
+        IngridientsAdapter adapter = new IngridientsAdapter(mContext,R.layout.item_ingridient,mRecipe.getListIngridients());
         listViewIngridients.setAdapter(adapter);
 
     }
