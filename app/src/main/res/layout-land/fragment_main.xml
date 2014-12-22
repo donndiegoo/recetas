@@ -19,7 +19,7 @@
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
         app:item_margin="8dp"
-        app:column_count="2"
+        app:column_count="3"
         app:grid_paddingLeft="0dp"
         app:grid_paddingRight="0dp"/>
 

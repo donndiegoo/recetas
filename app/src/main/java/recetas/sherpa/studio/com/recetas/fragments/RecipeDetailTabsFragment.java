@@ -2,6 +2,7 @@ package recetas.sherpa.studio.com.recetas.fragments;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.adapters.RecipeDetailTabsAdapter;
@@ -48,5 +49,7 @@ public class RecipeDetailTabsFragment extends SlidingTabsBasicFragment{
         };
 
         configureSlidingTab(adapter,colorizer);
+
+        ((TextView) getView().findViewById(R.id.toolbar)).setText(mRecipe.getTitle());
     }
 }

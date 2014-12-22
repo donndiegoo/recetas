@@ -66,7 +66,11 @@ public class RecipesManager {
                         }
                         else
                         {
-                            if(recipeElement.getName().endsWith(".txt"))
+                            if(recipeElement.getName().endsWith("~"))
+                            {
+                                //ignore
+                            }
+                            else if(recipeElement.getName().endsWith(".txt"))
                             {
                                 recipe = new RecipeStepByStep();
                                 ((RecipeStepByStep)recipe).parseListIngridientsAndInstructions(recipeElement);

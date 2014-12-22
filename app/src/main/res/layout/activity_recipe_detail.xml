@@ -3,11 +3,30 @@
     android:layout_height="match_parent"
     tools:context="recetas.sherpa.studio.com.recetas.activities.RecipeDetailActivity">
 
-    <FrameLayout
-        android:id="@+id/sample_content_fragment"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:scaleType="fitStart"
+        android:id="@+id/recipe_detail_image"/>
 
+    <com.emilsjolander.components.StickyScrollViewItems.StickyScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:id="@+id/sample_content_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingTop="200dp" />
+            </LinearLayout>
+    </com.emilsjolander.components.StickyScrollViewItems.StickyScrollView>
 
 
 </RelativeLayout>

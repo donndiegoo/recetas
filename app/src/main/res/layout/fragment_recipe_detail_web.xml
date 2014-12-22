@@ -4,7 +4,23 @@
     android:layout_height="match_parent"
     tools:context="recetas.sherpa.studio.com.recetas.fragments.RecipeDetailWebFragment">
 
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:paddingLeft="60dp"
+        android:paddingTop="14dp"
+        android:paddingRight="70dp"
+        android:paddingBottom="14dp"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:background="@color/theme_color"
+        android:tag="sticky"/>
+
     <WebView
+        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/webView"/>
@@ -17,5 +33,6 @@
         app:cpb_textError="@string/Error"
         app:cpb_cornerRadius="32dp"
         app:cpb_colorIndicatorBackground="@color/white"
+        app:cpb_colorIndicator="@color/theme_color"
         android:layout_centerInParent="true"/>
 </RelativeLayout>

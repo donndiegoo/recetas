@@ -62,8 +62,6 @@ public class RecipesAdapter extends ArrayAdapter<Recipe> {
             // Trigger the download of the URL asynchronously into the image view.
             Picasso.with(mContext)
                     .load(new File(objectItem.getFirstPicture()))
-                    .resizeDimen(R.dimen.list_detail_image_size, R.dimen.list_detail_image_size)
-                    .centerInside()
                     .tag(mContext)
                     .into(holder.image);
         }

@@ -99,7 +99,7 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
         if(mAddButton.isExpanded())
         {
             mBlurImage.setVisibility(View.VISIBLE);
-            AlphaAnimation animation1 = new AlphaAnimation(0.0f, 0.85f);
+            AlphaAnimation animation1 = new AlphaAnimation(0.0f, 0.9f);
             animation1.setDuration(500);
             animation1.setFillAfter(true);
             mBlurImage.startAnimation(animation1);
