@@ -17,19 +17,14 @@
         android:background="@color/theme_color"
         android:tag="sticky"/>
 
-    <RelativeLayout
-        android:layout_below="@id/toolbar"
+    <ImageButton
+        android:id="@+id/open_app"
+        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="300dp"
+        android:layout_marginBottom="0dp"
+        android:background="@color/theme_color"
+        android:src="@drawable/icon_pdf"
+        android:layout_alignParentBottom="true"/>
 
-        <Button
-            android:id="@+id/open_app"
-            android:layout_width="wrap_content"
-            android:layout_height="64dp"
-            android:background="@drawable/button_background"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:layout_centerInParent="true"/>
-
-    </RelativeLayout>
 </RelativeLayout>

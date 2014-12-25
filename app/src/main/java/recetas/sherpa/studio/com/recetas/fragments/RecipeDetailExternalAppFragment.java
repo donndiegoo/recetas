@@ -2,12 +2,18 @@ package recetas.sherpa.studio.com.recetas.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -22,7 +28,7 @@ import recetas.sherpa.studio.com.recetas.data.RecipeFile;
  */
 public class RecipeDetailExternalAppFragment extends RecipeDetailBaseFragment {
 
-    private Button mOpenAppButton;
+    private ImageButton mOpenAppButton;
 
     /**
      * Use this factory method to create a new instance of
@@ -52,11 +58,11 @@ public class RecipeDetailExternalAppFragment extends RecipeDetailBaseFragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail_external_app, container, false);
 
-        mOpenAppButton = (Button) rootView.findViewById(R.id.open_app);
+        mOpenAppButton = (ImageButton) rootView.findViewById(R.id.open_app);
 
         if(((RecipeFile)mRecipe).getFilePath().endsWith(".pdf"))
         {
-            mOpenAppButton.setText(MessageFormat.format(getActivity().getString(R.string.open_external_app), "PDF"));
+            //mOpenAppButton.setText(MessageFormat.format(getActivity().getString(R.string.open_external_app), "PDF"));
             mOpenAppButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -66,7 +72,8 @@ public class RecipeDetailExternalAppFragment extends RecipeDetailBaseFragment {
         }
         else if(((RecipeFile)mRecipe).getFilePath().endsWith(".doc"))
         {
-            mOpenAppButton.setText(MessageFormat.format(getActivity().getString(R.string.open_external_app), "DOC"));
+            //mOpenAppButton.setText(MessageFormat.format(getActivity().getString(R.string.open_external_app), "DOC"));
+            mOpenAppButton.setImageResource(R.drawable.icno_word);
             mOpenAppButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -76,7 +83,8 @@ public class RecipeDetailExternalAppFragment extends RecipeDetailBaseFragment {
         }
         else if(((RecipeFile)mRecipe).getFilePath().endsWith(".docx"))
         {
-            mOpenAppButton.setText(MessageFormat.format(getActivity().getString(R.string.open_external_app), "DOC"));
+            //mOpenAppButton.setText(MessageFormat.format(getActivity().getString(R.string.open_external_app), "DOC"));
+            mOpenAppButton.setImageResource(R.drawable.icno_word);
             mOpenAppButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -90,13 +98,21 @@ public class RecipeDetailExternalAppFragment extends RecipeDetailBaseFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
+    public void onStart() {
+        super.onStart();
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+        Resources r = getResources();
+        int actionBarHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56, r.getDisplayMetrics());
+
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int height = size.y;
+        height = height - actionBarHeight;
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mOpenAppButton.getLayoutParams();
+        params.height = height;
+        mOpenAppButton.setLayoutParams(params);
     }
 
     public void setRecipe(RecipeFile recipe) {
