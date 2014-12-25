@@ -2,12 +2,8 @@
 <resources>
 
     <string name="app_name">Recetas</string>
-
-
     <string name="action_search">Buscar</string>
     <string name="action_refresh">Sincronizar recetas</string>
-
-
     <string name="action_settings">Settings</string>
     <string name="add_recipe_manual">Paso a paso</string>
     <string name="add_recipe_web">Enlace a una Web</string>
@@ -22,8 +18,12 @@
     <string name="step_by_step_instructions">Instrucciones</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="open_external_app">Abrir {0} con otra aplicacion</string>
-
     <string name="recipe_detail_edit">Modificar receta</string>
     <string name="recipe_detail_delete">Borrar receta</string>
+    <string name="recipe_edit_title">Titulo</string>
+    <string name="recipe_edit_ingridients">Ingredients</string>
+    <string name="recipe_edit_instructions">Instrucciones</string>
+    <string name="title_activity_image_gallery">ImageGallery</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

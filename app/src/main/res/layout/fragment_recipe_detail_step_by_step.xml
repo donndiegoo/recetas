@@ -24,16 +24,6 @@
             android:textSize="20sp"
             android:background="@color/theme_color"/>
 
-       <!-- <android.support.v7.widget.Toolbar
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            app:popupTheme="@style/Theme.AppCompat.Light.DarkActionBar"
-            app:theme="@style/AppTheme" />-->
-
         <recetas.sherpa.studio.com.recetas.widgets.SlidingTab.SlidingTabLayout
             android:id="@+id/sliding_tabs"
             android:layout_width="match_parent"

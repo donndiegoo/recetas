@@ -59,9 +59,15 @@ public class RecipesAdapter extends ArrayAdapter<Recipe> {
         if(picturePath.length() > 0)
         {
             holder.image.setVisibility(View.VISIBLE);
+
+            int width = holder.image.getLayoutParams().width;
+            int height = holder.image.getLayoutParams().height;
+
             // Trigger the download of the URL asynchronously into the image view.
             Picasso.with(mContext)
                     .load(new File(objectItem.getFirstPicture()))
+                    .resize(100, height)
+                    .centerCrop()
                     .tag(mContext)
                     .into(holder.image);
         }

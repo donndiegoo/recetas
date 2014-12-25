@@ -68,6 +68,7 @@ public class SlidingTabsBasicFragment extends RecipeDetailBaseFragment {
      */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view,savedInstanceState);
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mSlidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
     }

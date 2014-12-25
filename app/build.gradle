@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "recetas.sherpa.studio.com.recetas"
-        minSdkVersion 16
+        minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
         versionName "1.0beta"
@@ -36,6 +36,5 @@ dependencies {
     compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.nispok:snackbar:2.6.0'
     compile 'se.emilsjolander:StickyScrollViewItems:1.1.0'
-    compile 'com.crashlytics.android:crashlytics:1.+'
 
 }

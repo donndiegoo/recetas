@@ -50,6 +50,6 @@ public class RecipeDetailTabsFragment extends SlidingTabsBasicFragment{
 
         configureSlidingTab(adapter,colorizer);
 
-        ((TextView) getView().findViewById(R.id.toolbar)).setText(mRecipe.getTitle());
+
     }
 }

@@ -95,20 +95,18 @@ public class RecipesManager {
                                 recipe = new RecipeFile();
                                 ((RecipeFile)recipe).setFilePath(recipeElement.getAbsolutePath());
                             }
-                            else
-                            {
-                                recipe = new Recipe();
-                                recipe.setPath(recipeElement.getAbsolutePath());
-                            }
                         }
                     }
 
-                    if(recipe != null)
+                    if(recipe == null)
                     {
-                        recipe.setTitle(recipeDirectory.getName());
-                        recipe.setListPictures(images);
-                        temporaryList.add(recipe);
+                        recipe = new Recipe();
+                        recipe.setPath("");
                     }
+
+                    recipe.setTitle(recipeDirectory.getName());
+                    recipe.setListPictures(images);
+                    temporaryList.add(recipe);
                 }
             }
 
