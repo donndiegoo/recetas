@@ -5,6 +5,7 @@ import android.app.SearchableInfo;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -14,11 +15,16 @@ import android.view.MenuItem;
 import java.util.List;
 
 import recetas.sherpa.studio.com.recetas.R;
+import recetas.sherpa.studio.com.recetas.fragments.NavigationDrawerFragment;
 import recetas.sherpa.studio.com.recetas.fragments.RecipesFragment;
 
+public class RecipesActivity extends ActionBarActivity
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, SearchView.OnQueryTextListener {
 
-public class MainActivity extends ActionBarActivity implements SearchView.OnQueryTextListener{
-
+    /**
+     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     */
+    private NavigationDrawerFragment mNavigationDrawerFragment;
     private RecipesFragment mFragment;
 
     private SearchView mSearchView;
@@ -26,7 +32,15 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_recipes);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+
+        // Set up the drawer.
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("");
@@ -37,6 +51,15 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.container, mFragment).commit();
         }
+    }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        Log.d("RecipesActivity", "onNavigationDrawerItemSelected: " + position);
+    }
+
+    public void onSectionAttached(int number) {
+
     }
 
 
@@ -53,6 +76,13 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -110,4 +140,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     protected boolean isAlwaysExpanded() {
         return false;
     }
+
+
+
 }

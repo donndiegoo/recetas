@@ -55,7 +55,7 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_main, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_recipes, container, false);
 
         RecipesManager.getInstance().loadRecipesFromCache();
         mListRecipes = RecipesManager.getInstance().getListReceipes();
