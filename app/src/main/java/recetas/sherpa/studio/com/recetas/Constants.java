@@ -6,4 +6,5 @@ package recetas.sherpa.studio.com.recetas;
 public class Constants {
 
     public static final String RECIPES_DIRECTORY = "Recetas";
+    public static final String HASH_FILE = "hash";
 }

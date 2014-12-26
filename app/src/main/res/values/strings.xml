@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Recetas</string>
+    <string name="app_name">Reyetas</string>
     <string name="action_search">Buscar</string>
     <string name="action_refresh">Sincronizar recetas</string>
     <string name="action_settings">Settings</string>

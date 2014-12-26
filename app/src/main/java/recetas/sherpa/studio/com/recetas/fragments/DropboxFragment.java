@@ -24,8 +24,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 import recetas.sherpa.studio.com.recetas.Constants;
+import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 import recetas.sherpa.studio.com.recetas.helpers.DropboxListener;
@@ -305,7 +309,7 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
         mAsyncTaskRecipes.execute();
     }
 
-    private void moveTemporaryRecipesToRealRecipes() {
+    private void moveTemporaryRecipesToRealRecipes(List<String> listFilesNotModified) {
         String recipesFolderPath = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY;
         String recipesFolderPathTemp = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY + "_aux";
         String recipesFolderPathTemp2 = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY + "_aux_2";
@@ -319,6 +323,14 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
             recipesFolder = new File(recipesFolderPath); // reset recipesFolder to original folder
             if(recipesFolderTemp.renameTo(recipesFolder)) // Reneme temp folder to oringal one)
             {
+                for(String name : listFilesNotModified)
+                {
+                    File fileOrigin = new File(recipesFolderPathTemp2 + "/" + name);
+                    File fileDestin = new File(recipesFolderPath + "/" + name);
+                    boolean renamed = fileOrigin.renameTo(fileDestin);
+                    Log.d(TAG, "file: " + name + " moved? " + renamed);
+                }
+
                 deleteFile(recipesFolderPathTemp);
                 deleteFile(recipesFolderPathTemp2);
             }
@@ -326,8 +338,8 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
 
     }
 
-    private boolean hasRecipesChanged(String hash) {
-        String lastHash = MyPreferences.getRecipesHash(getActivity());
+    private boolean hasRecipesChanged(String path, String hash) {
+        String lastHash = MyApplication.getHashFile(path);
         return !hash.equals(lastHash);
     }
 
@@ -369,7 +381,8 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
             try {
                 String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
                 mRecipesContent = mApi.metadata(recipesFolderNameRemote, 1000, null, true, null);
-                mHasChanged = hasRecipesChanged(mRecipesContent.hash); // Check hash
+               //mHasChanged = hasRecipesChanged(Constants.RECIPES_DIRECTORY, mRecipesContent.hash); //FIXME delete Task and add behaviour inside TaskRescipes
+                mHasChanged = true;
             }
             catch(DropboxException e) {
                 e.printStackTrace();
@@ -413,6 +426,7 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
         protected Boolean doInBackground(Object... params) {
 
             boolean result = true;
+            List<String> listFilesNotModified = new ArrayList<>();
 
             try{
 
@@ -432,40 +446,55 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
 
                 for (Entry recipeFile : mRecipesContent.contents) {
                     if (recipeFile.isDir) {
-                        File recipeDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName());
-                        recipeDirectory.mkdir();
+
+                        Log.d(TAG,"Getting metadata from: " + recipeFile.fileName());
 
                         Entry recipeContent = mApi.metadata(recipeFile.path, 1000, null, true, null);
 
-                        for (Entry recipeElement : recipeContent.contents) {
-                            if (recipeElement.isDir && recipeElement.fileName().equals("Imagenes")) {
-                                Entry imagesContent = mApi.metadata(recipeElement.path, 1000, null, true, null);
+                        Log.d(TAG,"metadata arrived");
 
-                                if (imagesContent.contents.size() > 0) {
-                                    File imagesDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName() + "/" + "Imagenes");
-                                    imagesDirectory.mkdir();
+                        boolean recipeHasChanged = hasRecipesChanged(recipeFile.fileName(), recipeContent.hash);
+                        if(recipeHasChanged) {
 
-                                    for (Entry imageElement : imagesContent.contents) {
-                                        if (!imageElement.isDir) {
-                                            String imagePath = recipesFolderNameLocal + "/" + recipeFile.fileName() + "/Imagenes/" + imageElement.fileName();
-                                            FileOutputStream outputStream = new FileOutputStream(imagePath);
-                                            DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/Imagenes/" + imageElement.fileName(), null, outputStream, null);
-                                            outputStream.close();
+                            File recipeDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName());
+                            recipeDirectory.mkdir();
+
+                            for (Entry recipeElement : recipeContent.contents) {
+                                if (recipeElement.isDir && recipeElement.fileName().equals("Imagenes")) {
+                                    Entry imagesContent = mApi.metadata(recipeElement.path, 1000, null, true, null);
+
+                                    if (imagesContent.contents.size() > 0) {
+                                        File imagesDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName() + "/" + "Imagenes");
+                                        imagesDirectory.mkdir();
+
+                                        for (Entry imageElement : imagesContent.contents) {
+                                            if (!imageElement.isDir) {
+                                                String imagePath = recipesFolderNameLocal + "/" + recipeFile.fileName() + "/Imagenes/" + imageElement.fileName();
+                                                FileOutputStream outputStream = new FileOutputStream(imagePath);
+                                                DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/Imagenes/" + imageElement.fileName(), null, outputStream, null);
+                                                outputStream.close();
+                                            }
                                         }
                                     }
+                                } else if (!recipeElement.isDir) {
+                                    String filePath = recipesFolderNameLocal + "/" + recipeFile.fileName() + "/" + recipeElement.fileName();
+                                    FileOutputStream outputStream = new FileOutputStream(filePath);
+                                    DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/" + recipeElement.fileName(), null, outputStream, null);
+                                    outputStream.close();
                                 }
-                            } else if (!recipeElement.isDir) {
-                                String filePath = recipesFolderNameLocal + "/" + recipeFile.fileName() + "/" + recipeElement.fileName();
-                                FileOutputStream outputStream = new FileOutputStream(filePath);
-                                DropboxAPI.DropboxFileInfo info = mApi.getFile(recipesFolderNameRemote + "/" + recipeFile.fileName() + "/" + recipeElement.fileName(), null, outputStream, null);
-                                outputStream.close();
                             }
+                            MyApplication.setHashFile(recipeFile.fileName(),recipeContent.hash);
+                        }
+                        else
+                        {
+                            listFilesNotModified.add(recipeFile.fileName());
                         }
                     }
                 }
 
-                MyPreferences.setRecipesHash(getActivity(),mRecipesContent.hash);
-                moveTemporaryRecipesToRealRecipes();
+                MyApplication.setHashFile(mRecipesContent.fileName(),mRecipesContent.hash);
+                MyApplication.storeHashMap();
+                moveTemporaryRecipesToRealRecipes(listFilesNotModified);
 
             }
             catch(DropboxException e)
