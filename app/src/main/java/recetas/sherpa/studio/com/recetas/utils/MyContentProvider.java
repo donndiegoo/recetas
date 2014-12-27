@@ -9,6 +9,8 @@ import android.os.ParcelFileDescriptor;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import recetas.sherpa.studio.com.recetas.MyApplication;
+
 /**
  * Created by diego on 17/12/14.
  */
@@ -16,7 +18,7 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-        File privateFile = new File(getContext().getFilesDir(), uri.getPath());
+        File privateFile = new File(MyApplication.getRecipesBaseDirecotry(), uri.getPath());
         return ParcelFileDescriptor.open(privateFile, ParcelFileDescriptor.MODE_READ_ONLY);
     }
 

@@ -46,7 +46,9 @@ public class RecipesManager {
         try{
             List<Recipe> temporaryList = new ArrayList<Recipe>();
 
-            String recipesFolderNameLocal = MyApplication.mGeneralContext.getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY;
+            String baseDirectory = MyApplication.getRecipesBaseDirecotry();
+
+            String recipesFolderNameLocal = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
             File recipesFolder = new File(recipesFolderNameLocal);
 
 

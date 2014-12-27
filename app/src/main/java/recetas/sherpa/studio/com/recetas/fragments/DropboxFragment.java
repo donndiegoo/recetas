@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -310,9 +311,12 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
     }
 
     private void moveTemporaryRecipesToRealRecipes(List<String> listFilesNotModified) {
-        String recipesFolderPath = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY;
-        String recipesFolderPathTemp = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY + "_aux";
-        String recipesFolderPathTemp2 = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY + "_aux_2";
+
+        String baseDirectory = MyApplication.getRecipesBaseDirecotry();
+
+        String recipesFolderPath = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
+        String recipesFolderPathTemp = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux";
+        String recipesFolderPathTemp2 = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux_2";
 
         File recipesFolder = new File(recipesFolderPath);
         File recipesFolderTemp = new File(recipesFolderPathTemp);
@@ -430,7 +434,9 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
 
             try{
 
-                String recipesFolderNameLocal = getActivity().getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY + "_aux";
+                String baseDirectory = MyApplication.getRecipesBaseDirecotry();
+
+                String recipesFolderNameLocal = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux";
                 String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
 
                 File file = new File(recipesFolderNameLocal);

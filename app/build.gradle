@@ -36,5 +36,6 @@ dependencies {
     compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.nispok:snackbar:2.6.0'
     compile 'se.emilsjolander:StickyScrollViewItems:1.1.0'
+    compile 'com.ikimuhendis:ldrawer:0.1'
 
 }

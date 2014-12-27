@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import java.io.File;
 import java.text.MessageFormat;
 
+import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.RecipeFile;
 
@@ -121,7 +122,7 @@ public class RecipeDetailExternalAppFragment extends RecipeDetailBaseFragment {
 
     public void openDocument(File file, String mimeType)
     {
-        String pathApp = getActivity().getFilesDir().getPath();
+        String pathApp = MyApplication.getRecipesBaseDirecotry();
         String relativePath = file.getPath().replace(pathApp,"");
         Uri uri = Uri.parse("content://recetas.sherpa.studio.com.recetas/" + relativePath);
         Intent intent = new Intent(Intent.ACTION_VIEW);

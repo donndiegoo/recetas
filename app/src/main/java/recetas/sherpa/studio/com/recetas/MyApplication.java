@@ -2,6 +2,7 @@ package recetas.sherpa.studio.com.recetas;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Environment;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,7 +27,9 @@ public class MyApplication extends Application {
 
         mGeneralContext = this;
 
-        File mydir = new File(getFilesDir().getAbsolutePath() + "/" + Constants.RECIPES_DIRECTORY); //Creating an internal dir;
+        String baseDirectory = MyApplication.getRecipesBaseDirecotry();
+
+        File mydir = new File(baseDirectory + "/" + Constants.RECIPES_DIRECTORY); //Creating an internal dir;
         if(!mydir.exists()) {
             mydir.mkdir();
         }
@@ -114,5 +117,10 @@ public class MyApplication extends Application {
     public static void setHashFile(String fileName, String hash)
     {
        mHashMap.put(fileName,hash);
+    }
+
+    public static String getRecipesBaseDirecotry()
+    {
+        return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 }
