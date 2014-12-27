@@ -60,4 +60,56 @@ public class RecipeStepByStep extends Recipe{
         }
 
     }
+
+    public void parseListIngridients(String ingridients) {
+        List<String> list = new ArrayList<>();
+        try
+        {
+            if (ingridients != null) {
+                String[] lines = ingridients.split(System.getProperty("line.separator"));
+
+                for(String line : lines) {
+                    if(line.startsWith("*"))
+                    {
+                        mListIngridients.addAll(list);
+                        break;
+                    }
+                    else{
+                        list.add(line);
+                    }
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void parseListInstructions(String instructions) {
+        List<String> list = new ArrayList<>();
+        try
+        {
+            if (instructions != null) {
+                String[] lines = instructions.split(System.getProperty("line.separator"));
+
+                for(String line : lines) {
+                    if(line.equals(lines[lines.length - 1]))
+                    {
+                        mListInstructions.addAll(list);
+                        break;
+                    }
+                    else{
+                        list.add(line);
+                    }
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
 }

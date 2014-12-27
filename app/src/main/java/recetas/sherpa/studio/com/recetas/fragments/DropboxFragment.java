@@ -282,15 +282,7 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
 
     @Override
     public void onRecipesTaskFinsihted(boolean result) {
-        if(result)
-        {
-            refreshRecipes(true);
-        }
-        else
-        {
-            //TODO show error
-            mSubmit.setProgress(-1);
-        }
+        refreshRecipes(result);
     }
 
     private void refreshRecipes(boolean changed)
@@ -429,7 +421,7 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
         @Override
         protected Boolean doInBackground(Object... params) {
 
-            boolean result = true;
+            boolean recipesChanged = false;
             List<String> listFilesNotModified = new ArrayList<>();
 
             try{
@@ -461,6 +453,7 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
 
                         boolean recipeHasChanged = hasRecipesChanged(recipeFile.fileName(), recipeContent.hash);
                         if(recipeHasChanged) {
+                            recipesChanged = true;
 
                             File recipeDirectory = new File(recipesFolderNameLocal + "/" + recipeFile.fileName());
                             recipeDirectory.mkdir();
@@ -506,25 +499,29 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
             catch(DropboxException e)
             {
                 Log.d(TAG,e.getMessage());
-                result = false;
+                recipesChanged = false;
+                showErrorMessage();
             }
             catch(FileNotFoundException e)
             {
                 Log.d(TAG,e.getMessage());
-                result = false;
+                recipesChanged = false;
+                showErrorMessage();
             }
             catch (IOException e)
             {
                 Log.d(TAG,e.getMessage());
-                result = false;
+                recipesChanged = false;
+                showErrorMessage();
             }
             catch (Exception e)
             {
                 Log.d(TAG,e.getMessage());
-                result = false;
+                recipesChanged = false;
+                showErrorMessage();
             }
 
-            return result;
+            return recipesChanged;
         }
 
         @Override
@@ -535,5 +532,9 @@ public class DropboxFragment extends Fragment implements TaskDropboxListener {
                 mListener.onRecipesTaskFinsihted(result);
             }
         }
+    }
+
+    private void showErrorMessage() {
+        Toast.makeText(getActivity(),"Ups! Ha habido un error de conexion, Tus recetas no se han actualizado pero no pasa nada, lo haran la proxima vez ;)",Toast.LENGTH_LONG).show();
     }
 }

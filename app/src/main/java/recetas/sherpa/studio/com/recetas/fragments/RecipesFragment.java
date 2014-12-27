@@ -22,6 +22,8 @@ import com.nispok.snackbar.listeners.ActionClickListener;
 import java.util.List;
 
 import recetas.sherpa.studio.com.recetas.R;
+import recetas.sherpa.studio.com.recetas.activities.PhotosPickerActivity;
+import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivity;
 import recetas.sherpa.studio.com.recetas.activities.RecipeDetailActivity;
 import recetas.sherpa.studio.com.recetas.adapters.RecipesAdapter;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
@@ -75,7 +77,21 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
         mRootView.findViewById(R.id.add_file).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                performFileSearch();
+                createRecipeFromFile();
+            }
+        });
+
+        mRootView.findViewById(R.id.add_manually).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createRecipeStepByStep();
+            }
+        });
+
+        mRootView.findViewById(R.id.add_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createRecipeFromCamera();
             }
         });
 
@@ -115,7 +131,7 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
         }
     }
 
-    public void performFileSearch() {
+    private void createRecipeFromFile() {
 
         // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
         // browser.
@@ -132,6 +148,15 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
         intent.setType("*/*");
 
         startActivityForResult(intent, READ_REQUEST_CODE);
+    }
+
+    private void createRecipeFromCamera()
+    {
+        PhotosPickerActivity.startActivity(getActivity());
+    }
+
+    private void createRecipeStepByStep() {
+        RecipeCreateActivity.startActivity(getActivity());
     }
 
     @Override

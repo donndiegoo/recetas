@@ -42,7 +42,7 @@
         fab:fab_addButtonColorNormal="@color/theme_color"
         fab:fab_addButtonColorPressed="@color/theme_color_dark"
         fab:fab_addButtonPlusIconColor="#FFFFFF"
-        fab:fab_labelStyle="@style/menu_labels_style">
+        fab:fab_expandDirection="left">
 
         <recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionButton
             android:id="@+id/add_manually"
@@ -50,8 +50,7 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/white"
             fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_icon="@drawable/ic_manual_grey"
-            fab:fab_title="@string/add_recipe_manual"/>
+            fab:fab_icon="@drawable/ic_manual_grey"/>
 
         <recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionButton
             android:id="@+id/add_web"
@@ -59,8 +58,7 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/white"
             fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_icon="@drawable/ic_www"
-            fab:fab_title="@string/add_recipe_web"/>
+            fab:fab_icon="@drawable/ic_www"/>
 
         <recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionButton
             android:id="@+id/add_file"
@@ -68,8 +66,7 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/white"
             fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_icon="@drawable/ic_document"
-            fab:fab_title="@string/add_recipe_document"/>
+            fab:fab_icon="@drawable/ic_document"/>
 
         <recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionButton
             android:id="@+id/add_camera"
@@ -77,8 +74,7 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/white"
             fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_icon="@drawable/ic_camera_grey"
-            fab:fab_title="@string/add_recipe_camera"/>
+            fab:fab_icon="@drawable/ic_camera_grey"/>
 
         </recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenu>
 
