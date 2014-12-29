@@ -31,21 +31,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.dropbox.client2.android.AuthActivity"
-            android:configChanges="orientation|keyboard"
-            android:launchMode="singleTask" >
-            <intent-filter>
-
-                <!-- Change this to be db- followed by your app key -->
-                <data android:scheme="@string/dropbox_api_key_manifest" />
-
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".activities.RecipeDetailActivity"
             android:label="@string/title_activity_recipe_detail"
             android:parentActivityName=".activities.RecipesActivity"
@@ -62,13 +47,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="recetas.sherpa.studio.com.recetas.activities.RecipeDetailActivity" />
         </activity>
-        <!-- <activity -->
-        <!-- android:name=".activities.RecipesActivity" -->
-        <!-- android:label="@string/title_activity_recipes" > -->
-        <!-- </activity> -->
         <activity
-            android:name=".activities.PhotosPickerActivity"
-            android:label="@string/title_activity_photos_picker"
+            android:name=".activities.RecipeCreateActivityStepByStep"
+            android:label="Receta Paso a Paso"
             android:parentActivityName=".activities.RecipesActivity"
             android:screenOrientation="portrait" >
             <meta-data
@@ -76,8 +57,31 @@
                 android:value="recetas.sherpa.studio.com.recetas.activities.RecipesActivity" />
         </activity>
         <activity
-            android:name=".activities.RecipeCreateActivity"
-            android:label="@string/title_activity_recipe_create" >
+            android:name=".activities.RecipeCreateActivityPictures"
+            android:label="Receta de fotos"
+            android:parentActivityName=".activities.RecipesActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="recetas.sherpa.studio.com.recetas.activities.RecipesActivity" />
+        </activity>
+
+
+
+        <activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask" >
+            <intent-filter>
+
+                <!-- Change this to be db- followed by your app key -->
+                <data android:scheme="@string/dropbox_api_key_manifest" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
     </application>
 

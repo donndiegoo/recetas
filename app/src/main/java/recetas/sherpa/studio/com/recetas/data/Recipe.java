@@ -1,7 +1,11 @@
 package recetas.sherpa.studio.com.recetas.data;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import recetas.sherpa.studio.com.recetas.Constants;
+import recetas.sherpa.studio.com.recetas.MyApplication;
 
 /**
  * Created by diego on 13/12/14.
@@ -54,5 +58,18 @@ public class Recipe {
         {
             return "";
         }
+    }
+
+    public String getRecipeDirectoryPathLocal()
+    {
+        String baseDirectory = MyApplication.getRecipesBaseDirecotry();
+        String recipesFolderNameLocal = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
+        return recipesFolderNameLocal + "/" + getTitle();
+    }
+
+    public String getRecipeDirectoryPathRemote()
+    {
+        String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
+        return recipesFolderNameRemote + "/" + getTitle();
     }
 }

@@ -39,7 +39,9 @@
     <string name="title_activity_recipe_create">RecipeCreateActivity</string>
 
     <!-- RECIPE CREATION -->
+    <string name="recipe_edit_header_picture">Foto para la cabecera</string>
     <string name="recipe_edit_title">Titulo</string>
+    <string name="recipe_edit_pictures">Fotos</string>
     <string name="recipe_edit_ingridients">Ingredientes</string>
     <string name="recipe_edit_instructions">Instrucciones</string>
     <string name="action_creation_finish">Guardar</string>

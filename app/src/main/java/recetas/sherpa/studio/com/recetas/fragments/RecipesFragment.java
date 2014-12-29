@@ -22,13 +22,15 @@ import com.nispok.snackbar.listeners.ActionClickListener;
 import java.util.List;
 
 import recetas.sherpa.studio.com.recetas.R;
-import recetas.sherpa.studio.com.recetas.activities.PhotosPickerActivity;
 import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivity;
+import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivityPictures;
+import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivityStepByStep;
 import recetas.sherpa.studio.com.recetas.activities.RecipeDetailActivity;
 import recetas.sherpa.studio.com.recetas.adapters.RecipesAdapter;
+import recetas.sherpa.studio.com.recetas.data.DropboxManager;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
-import recetas.sherpa.studio.com.recetas.helpers.DropboxListener;
+import recetas.sherpa.studio.com.recetas.data.DropboxListener;
 import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenu;
 import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenuButtonListener;
 
@@ -46,7 +48,6 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
     private View                    mRootView;
     private StaggeredGridView       mListView;
     private FloatingActionsMenu     mAddButton;
-    private DropboxFragment         mDropboxFragment;
 
     private List<Recipe>            mListRecipes;
     private  RecipesAdapter         mAdapter;
@@ -71,8 +72,8 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
         mAddButton = (FloatingActionsMenu) mRootView.findViewById(R.id.multiple_actions);
         mAddButton.setListener(this);
 
-        mDropboxFragment = (DropboxFragment) getActivity().getFragmentManager().findFragmentById(R.id.dropbox_fragment);
-        mDropboxFragment.setListener(this);
+        DropboxManager.getInstance().setListener(this);
+        DropboxManager.getInstance().setContext(getActivity());
 
         mRootView.findViewById(R.id.add_file).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,6 +109,13 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        DropboxManager.getInstance().loadRecipes(getActivity());
     }
 
     @Override
@@ -152,11 +160,11 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
 
     private void createRecipeFromCamera()
     {
-        PhotosPickerActivity.startActivity(getActivity());
+        RecipeCreateActivityPictures.startActivity(getActivity());
     }
 
     private void createRecipeStepByStep() {
-        RecipeCreateActivity.startActivity(getActivity());
+        RecipeCreateActivityStepByStep.startActivity(getActivity());
     }
 
     @Override

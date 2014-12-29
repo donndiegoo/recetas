@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivityPictures">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:padding="30dp">
+
+        <!-- PHOTO + TITLE -->
+        <include
+            layout="@layout/include_recipe_create_basic"/>
+
+        <!-- PICTURES -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/recipe_edit_pictures"
+            android:layout_marginTop="40dp"
+            android:textSize="22sp"
+            android:layout_marginBottom="5dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
+                <ViewFlipper
+                    android:id="@+id/viewFlipper_1"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:layout_marginRight="5dp"
+                    android:addStatesFromChildren="true"
+                    android:layout_weight="1">
+
+                    <android.support.v7.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        card_view:cardCornerRadius="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/photos_picker_camera_1"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_camera_grey"/>
+
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        card_view:cardCornerRadius="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/photos_picker_photo_1"
+                            android:scaleType="centerCrop"/>
+
+                    </android.support.v7.widget.CardView>
+
+                </ViewFlipper>
+
+                <ViewFlipper
+                    android:id="@+id/viewFlipper_2"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:addStatesFromChildren="true"
+                    android:layout_weight="1">
+
+                    <android.support.v7.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        card_view:cardCornerRadius="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/photos_picker_camera_2"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_camera_grey"/>
+
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        card_view:cardCornerRadius="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/photos_picker_photo_2"
+                            android:scaleType="centerCrop"/>
+
+                    </android.support.v7.widget.CardView>
+
+                </ViewFlipper>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:weightSum="2">
+
+                <ViewFlipper
+                    android:id="@+id/viewFlipper_3"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:layout_marginRight="5dp"
+                    android:addStatesFromChildren="true"
+                    android:layout_weight="1">
+
+                    <android.support.v7.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        card_view:cardCornerRadius="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/photos_picker_camera_3"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_camera_grey"/>
+
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        card_view:cardCornerRadius="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/photos_picker_photo_3"
+                            android:scaleType="centerCrop"/>
+
+                    </android.support.v7.widget.CardView>
+
+                </ViewFlipper>
+
+                <ViewFlipper
+                    android:id="@+id/viewFlipper_4"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:addStatesFromChildren="true"
+                    android:layout_weight="1">
+
+                    <android.support.v7.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        card_view:cardCornerRadius="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/photos_picker_camera_4"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_camera_grey"/>
+
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        card_view:cardCornerRadius="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/photos_picker_photo_4"
+                            android:scaleType="centerCrop"/>
+
+                    </android.support.v7.widget.CardView>
+
+                </ViewFlipper>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</ScrollView>

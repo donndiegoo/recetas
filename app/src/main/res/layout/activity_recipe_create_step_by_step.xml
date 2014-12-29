@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivityStepByStep">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:padding="30dp">
+
+        <include
+            layout="@layout/include_recipe_create_basic"/>
+
+        <!-- INGRIDIENTS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="@string/recipe_edit_ingridients"
+            android:textSize="22sp"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="top|left"
+            android:padding="10dp"
+            android:id="@+id/editText_ingredients"
+            android:inputType="textMultiLine"
+            android:hint="@string/action_creation_ingridients"/>
+
+
+        <!-- INSTRUCTIONS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="@string/recipe_edit_instructions"
+            android:textSize="22sp"
+            android:layout_marginBottom="5dp"
+            android:scrollHorizontally="false"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|left"
+            android:padding="10dp"
+            android:background="@color/white"
+            android:id="@+id/editText_instructions"
+            android:inputType="textMultiLine"
+            android:hint="@string/action_creation_instrucciones"
+            android:scrollHorizontally="false"/>
+
+
+    </LinearLayout>
+</ScrollView>

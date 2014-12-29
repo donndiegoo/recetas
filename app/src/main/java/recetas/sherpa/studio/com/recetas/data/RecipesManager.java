@@ -122,4 +122,15 @@ public class RecipesManager {
             Log.d(TAG,e.getMessage());
         }
     }
+
+    public void createRecipe(RecipeStepByStep mTemporaryRecipe) {
+        String baseDirectory = MyApplication.getRecipesBaseDirecotry();
+
+        String recipesFolderNameLocal = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
+
+        File newRecipeDirectory = new File(recipesFolderNameLocal + "/" + mTemporaryRecipe.getTitle());
+        newRecipeDirectory.mkdir();
+
+
+    }
 }
