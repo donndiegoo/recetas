@@ -1,17 +1,12 @@
-package recetas.sherpa.studio.com.recetas.data;
+package recetas.sherpa.studio.com.recetas.utils;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.DropBoxManager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.dd.CircularProgressButton;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.exception.DropboxException;
@@ -23,17 +18,23 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Observable;
 
 import recetas.sherpa.studio.com.recetas.Constants;
 import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
+import recetas.sherpa.studio.com.recetas.data.Recipe;
 
 /**
  * Created by diego on 27/12/14.
  */
-public class DropboxManager implements DropboxListenerTask {
+public class DropboxManager extends Observable implements DropboxListenerTask {
 
     private enum  TYPE_TASK
     {
@@ -64,12 +65,9 @@ public class DropboxManager implements DropboxListenerTask {
     private AsyncTask                           mAsyncTaskRecipes;
     private AsyncTask                           mAsyncTaskChanges;
 
-    private DropboxListener                     mListener;
     private Activity                            mContext;
 
     private TYPE_TASK                           mTypeTask;
-
-    private View                                mProgressView;
 
 
 
@@ -100,36 +98,53 @@ public class DropboxManager implements DropboxListenerTask {
      * PUBLIC METHODS
      ***************************************************************************************************************/
 
-    public void setListener(DropboxListener listener)
+    public void cancelAllRequests()
     {
-        mListener = listener;
-    }
-
-    public void setContext(Activity context) {
-
-        if(mContext != null) {
-            ViewGroup rootView = ((ViewGroup) mContext.getWindow().getDecorView().findViewById(android.R.id.content));
-            rootView.removeView(mProgressView);
+        if(mAsyncTaskRecipes != null && mAsyncTaskRecipes.getStatus() == AsyncTask.Status.RUNNING){
+            mAsyncTaskRecipes.cancel(true);
         }
-
-        mContext = context;
-        mProgressView = LayoutInflater.from(mContext).inflate(R.layout.fragment_dropbox,null);
-        mProgressView.setVisibility(View.GONE);
-        CircularProgressButton circluarProgress = (CircularProgressButton) mProgressView.findViewById(R.id.auth_button);
-        circluarProgress.setIndeterminateProgressMode(true);
-        circluarProgress.setProgress(50);
-
-        ViewGroup rootView = ((ViewGroup) mContext.getWindow().getDecorView().findViewById(android.R.id.content));
-        rootView.addView(mProgressView);
+        if(mAsyncTaskChanges != null && mAsyncTaskChanges.getStatus() == AsyncTask.Status.RUNNING)
+        {
+            mAsyncTaskChanges.cancel(true);
+        }
     }
 
-    public void loadRecipes(Context context)
+    public void loadRecipes(Activity context, boolean ignoreLimitQueryPerDay)
     {
-        showProgress();
-        mTypeTask = TYPE_TASK.TASK_LOAD_RECIPES;
-        doLogin(context);
+        mContext = context;
+
+        if(MyApplication.isConnected(context) && (ignoreLimitQueryPerDay || canMakeAnotherQueryToday()))
+        {
+            mTypeTask = TYPE_TASK.TASK_LOAD_RECIPES;
+            doLogin(context);
+        }
+        else
+        {
+            refreshRecipes(false);
+        }
     }
 
+    private boolean canMakeAnotherQueryToday() {
+        boolean can = false;
+
+        String lastQueryString = MyPreferences.getLastRecipesQueryDate(MyApplication.mGeneralContext);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMATTER);
+        try {
+            Date convertedDate = convertedDate = dateFormat.parse(lastQueryString);
+
+            Calendar todayCalendar = Calendar.getInstance();
+            long diff = todayCalendar.getTimeInMillis() - convertedDate.getTime();
+            long diffMinutes = diff / (60 * 1000) % 60;
+
+            if(diffMinutes >= Constants.MIN_INTERVAL_RECIPES_QUERY)
+            {
+                can = true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return can;
+    }
 
 
     /*****************************************************************************************************************
@@ -137,8 +152,24 @@ public class DropboxManager implements DropboxListenerTask {
      *****************************************************************************************************************/
 
     private void doLogin(Context context) {
+        Log.d(TAG, "DO LOGIN");
+
         AndroidAuthSession session = mApi.getSession();
-        if (session.authenticationSuccessful()) {
+        if(session.isLinked())
+        {
+            Log.d(TAG, "session already linked");
+            if(mTypeTask == TYPE_TASK.TASK_LOAD_RECIPES)
+            {
+                mAsyncTaskChanges = new TaskChanges(this);
+                mAsyncTaskChanges.execute();
+            }
+            else if(mTypeTask == TYPE_TASK.TASK_UPLOAD_RECIPE)
+            {
+
+            }
+        }
+        else if (session.authenticationSuccessful()) {
+            Log.d(TAG, "authentication successful");
             try {
                 // Mandatory call to complete the auth
                 session.finishAuthentication();
@@ -157,10 +188,10 @@ public class DropboxManager implements DropboxListenerTask {
 
             } catch (IllegalStateException e) {
                 showToast("Couldn't authenticate with Dropbox: " + e.getLocalizedMessage());
-                hideProgress();
             }
         }
         else {
+            Log.d(TAG, "Start the remote authentication");
             // Start the remote authentication
             if (USE_OAUTH1) {
                 mApi.getSession().startAuthentication(context);
@@ -255,30 +286,37 @@ public class DropboxManager implements DropboxListenerTask {
 
     @Override
     public void onRecipesTaskFinsihed(boolean result) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMATTER);
+            Calendar todayCalendar = Calendar.getInstance();
+            String todayDate = dateFormat.format(todayCalendar.getTime());
+            MyPreferences.setLastRecipesQueryDate(mContext,todayDate);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+
         refreshRecipes(result);
     }
 
     private void refreshRecipes(boolean changed)
     {
-        if(mListener != null)
-        {
-            mListener.onRecipesLoaded(changed);
-        }
+        triggerObservers(changed);
         mTypeTask = null;
-
-        hideProgress();
     }
 
 
 
     private class TaskChanges extends AsyncTask<Object,Object,Object>
     {
-        private DropboxListenerTask mListener;
+        private DropboxListenerTask listener;
         private boolean             mHasChanged;
 
         public TaskChanges(DropboxListenerTask listener) {
 
-            mListener = listener;
+            this.listener = listener;
         }
 
         @Override
@@ -306,10 +344,10 @@ public class DropboxManager implements DropboxListenerTask {
             super.onPostExecute(o);
             if(mHasChanged)
             {
-                mListener.onChangesTaskFinished(mRecipesContent);
+                listener.onChangesTaskFinished(mRecipesContent);
             }
             else{
-                mListener.onChangesTaskFinished();
+                listener.onChangesTaskFinished();
             }
 
         }
@@ -317,11 +355,11 @@ public class DropboxManager implements DropboxListenerTask {
 
     private class TaskRecipes extends AsyncTask<Object,Object,Boolean> {
 
-        private DropboxListenerTask mListener;
+        private DropboxListenerTask listener;
         private DropboxAPI.Entry mRecipesContent;
 
         public TaskRecipes(DropboxListenerTask listener, DropboxAPI.Entry recipesContent) {
-            mListener = listener;
+            this.listener = listener;
             mRecipesContent = recipesContent;
         }
 
@@ -441,9 +479,9 @@ public class DropboxManager implements DropboxListenerTask {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            if(mListener != null)
+            if(listener != null)
             {
-                mListener.onRecipesTaskFinsihed(result);
+                listener.onRecipesTaskFinsihed(result);
             }
         }
     }
@@ -557,14 +595,14 @@ public class DropboxManager implements DropboxListenerTask {
         Toast.makeText(MyApplication.mGeneralContext,"Ups! Ha habido un error de conexion, Tus recetas no se han actualizado pero no pasa nada, lo haran la proxima vez ;)",Toast.LENGTH_LONG).show();
     }
 
-    private void showProgress()
-    {
-        mProgressView.setVisibility(View.VISIBLE);
-    }
-
-    private void hideProgress()
-    {
-        mProgressView.setVisibility(View.GONE);
+    // Create a method to update the Observerable's flag to true for changes and
+    // notify the observers to check for a change. These are also a part of the
+    // secret sauce that makes Observers and Observables communicate
+    // predictably.
+    private void triggerObservers(boolean changed) {
+        Log.d(TAG,"triggerObservers with changed value; " + changed);
+        setChanged();
+        notifyObservers(changed);
     }
 
 }

@@ -30,8 +30,8 @@ import java.util.List;
 import recetas.sherpa.studio.com.recetas.Constants;
 import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
-import recetas.sherpa.studio.com.recetas.data.DropboxListener;
-import recetas.sherpa.studio.com.recetas.data.DropboxListenerTask;
+import recetas.sherpa.studio.com.recetas.utils.DropboxListener;
+import recetas.sherpa.studio.com.recetas.utils.DropboxListenerTask;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 
 /**

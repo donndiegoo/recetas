@@ -42,8 +42,15 @@ public class RecipeCreateActivityPictures extends RecipeCreateActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_recipe_create_pictures);
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_recipe_create_pictures);
+        setUpInterface();
+    }
+
+    @Override
+    protected void setUpInterface() {
+        super.setUpInterface();
 
         mImage1 = (ImageView) findViewById(R.id.photos_picker_photo_1);
         mImage2 = (ImageView) findViewById(R.id.photos_picker_photo_2);
@@ -134,8 +141,6 @@ public class RecipeCreateActivityPictures extends RecipeCreateActivity {
             }
 
         });
-
-
     }
 
     @Override

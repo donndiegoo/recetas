@@ -8,4 +8,9 @@
         android:orderInCategory="100"
         app:showAsAction="always"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
+
+    <item
+        android:id="@+id/action_cancel"
+        android:title="@string/action_cancel"
+        app:showAsAction="always"/>
 </menu>

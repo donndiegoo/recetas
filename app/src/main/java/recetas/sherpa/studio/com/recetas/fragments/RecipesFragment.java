@@ -1,10 +1,10 @@
 package recetas.sherpa.studio.com.recetas.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +20,17 @@ import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import recetas.sherpa.studio.com.recetas.R;
-import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivity;
 import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivityPictures;
 import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivityStepByStep;
 import recetas.sherpa.studio.com.recetas.activities.RecipeDetailActivity;
 import recetas.sherpa.studio.com.recetas.adapters.RecipesAdapter;
-import recetas.sherpa.studio.com.recetas.data.DropboxManager;
+import recetas.sherpa.studio.com.recetas.utils.DropboxManager;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
-import recetas.sherpa.studio.com.recetas.data.DropboxListener;
 import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenu;
 import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenuButtonListener;
 
@@ -38,7 +38,7 @@ import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingAc
 /**
  * Created by diego on 11/12/14.
  */
-public class RecipesFragment extends Fragment implements FloatingActionsMenuButtonListener, DropboxListener {
+public class RecipesFragment extends Fragment implements FloatingActionsMenuButtonListener, Observer {
 
     private static final int READ_REQUEST_CODE = 42;
     private static final String TAG = "RecipesFragment";
@@ -72,9 +72,6 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
         mAddButton = (FloatingActionsMenu) mRootView.findViewById(R.id.multiple_actions);
         mAddButton.setListener(this);
 
-        DropboxManager.getInstance().setListener(this);
-        DropboxManager.getInstance().setContext(getActivity());
-
         mRootView.findViewById(R.id.add_file).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,19 +100,9 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
             }
         });
 
+        DropboxManager.getInstance().addObserver(this);
+
         return mRootView;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        DropboxManager.getInstance().loadRecipes(getActivity());
     }
 
     @Override
@@ -189,16 +176,26 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
     }
 
     @Override
-    public void onRecipesLoaded(boolean changed) {
+    public void update(Observable observable, Object data) {
+
+        Log.d(TAG, "update recipes");
+
+        boolean changed = (boolean) data;
+
+        Log.d(TAG, "Recipes changed? " + changed);
+
         if(changed)
         {
             if(mListRecipes.isEmpty())
             {
+                Log.d(TAG, "List empty");
                 RecipesManager.getInstance().loadRecipesFromCache();
                 mAdapter.notifyDataSetChanged();
             }
             else
             {
+                Log.d(TAG, "List not empty, show snackbar");
+
                 SnackbarManager.show(
                         Snackbar.with(getActivity().getApplicationContext()) // context
                                 .type(SnackbarType.MULTI_LINE) // Set is as a multi-line snackbar

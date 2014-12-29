@@ -1,4 +1,4 @@
-package recetas.sherpa.studio.com.recetas.data;
+package recetas.sherpa.studio.com.recetas.utils;
 
 /**
  * Created by diego on 13/12/14.

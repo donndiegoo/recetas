@@ -1,8 +1,16 @@
 package recetas.sherpa.studio.com.recetas;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.dd.CircularProgressButton;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -122,5 +130,42 @@ public class MyApplication extends Application {
     public static String getRecipesBaseDirecotry()
     {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
+    }
+
+    public static boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = null;
+        if (connectivityManager != null) {
+            networkInfo =
+                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        }
+        return networkInfo == null ? false : networkInfo.isConnected();
+    }
+
+    public static View showProgressView(Activity context, View mProgresView)
+    {
+        if(mProgresView == null)
+        {
+            mProgresView = LayoutInflater.from(context).inflate(R.layout.fragment_dropbox,null);
+            CircularProgressButton circluarProgress = (CircularProgressButton) mProgresView.findViewById(R.id.auth_button);
+            circluarProgress.setIndeterminateProgressMode(true);
+            circluarProgress.setProgress(50);
+
+            ViewGroup rootView = ((ViewGroup) context.getWindow().getDecorView().findViewById(android.R.id.content));
+            rootView.addView(mProgresView);
+        }
+
+        mProgresView.setVisibility(View.VISIBLE);
+
+
+
+        return mProgresView;
+    }
+
+    public static void hideProgressView(View progressView)
+    {
+        if(progressView != null)
+            progressView.setVisibility(View.GONE);
     }
 }

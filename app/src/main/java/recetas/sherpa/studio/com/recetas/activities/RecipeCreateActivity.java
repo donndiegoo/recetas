@@ -35,7 +35,10 @@ public class RecipeCreateActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    protected void setUpInterface()
+    {
         mImage1 = (ImageView) findViewById(R.id.photos_picker_photo_1);
         mViewAnimator1 = (ViewAnimator)this.findViewById(R.id.viewFlipper_1);
         mTitle = (EditText) findViewById(R.id.editText_title);

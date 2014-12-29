@@ -26,13 +26,18 @@ public class RecipeCreateActivityStepByStep extends RecipeCreateActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_recipe_create_step_by_step);
-
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_recipe_create_step_by_step);
+        setUpInterface();
+
+    }
+
+    @Override
+    protected void setUpInterface() {
+        super.setUpInterface();
         mIngridients = (EditText) findViewById(R.id.editText_ingredients);
         mInstructions = (EditText) findViewById(R.id.editText_instructions);
-
     }
 
     @Override

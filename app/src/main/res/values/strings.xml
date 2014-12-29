@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- GENERAL -->
     <string name="app_name">Reyetas</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="Error">Error</string>
+
+    <!-- RECIPES -->
+    <string name="title_activity_recipes">RecipesActivity</string>
     <string name="action_search">Buscar</string>
     <string name="action_refresh">Sincronizar recetas</string>
     <string name="add_recipe_manual">Paso a paso</string>
     <string name="add_recipe_web">Enlace a una Web</string>
     <string name="add_recipe_document">Desde un archivo</string>
     <string name="add_recipe_camera">Tirar una foto</string>
-    <string name="Upload">Conectar con Dropbox</string>
-    <string name="Error">Error</string>
-    <string name="Complete">Comenzar</string>
-    <string name="dropbox_syncrhonize">Sincronizar recetas</string>
-    <string name="title_activity_recipe_detail">RecipeDetailActivity</string>
     <string name="step_by_step_ingridients">Ingredientes</string>
     <string name="step_by_step_instructions">Instrucciones</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -21,17 +22,11 @@
     <string name="recipe_detail_delete">Borrar receta</string>
 
     <string name="title_activity_image_gallery">ImageGallery</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_recipes">RecipesActivity</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
-    <string name="app_description">Android drawer icon with material design animation</string>
     <string name="drawer_open">drawer_open</string>
     <string name="drawer_close">drawer_close</string>
+
+    <!-- RECIPE DETAIL -->
+    <string name="title_activity_recipe_detail">RecipeDetailActivity</string>
 
     <!-- PHOTOS PICKER -->
     <string name="title_activity_photos_picker">Fotos</string>
