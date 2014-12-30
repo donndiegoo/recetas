@@ -2,6 +2,7 @@ package recetas.sherpa.studio.com.recetas.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Observable;
@@ -21,10 +23,10 @@ import java.util.Observer;
 import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
-import recetas.sherpa.studio.com.recetas.utils.DropboxManager;
 import recetas.sherpa.studio.com.recetas.fragments.RecipesFragment;
+import recetas.sherpa.studio.com.recetas.utils.DropboxManager;
 
-public class RecipesActivity extends ActionBarActivity implements  SearchView.OnQueryTextListener, Observer {
+public class RecipesActivity extends ActionBarActivity implements  SearchView.OnQueryTextListener, SearchView.OnCloseListener, Observer{
 
     private static final String TAG = RecipesActivity.class.getSimpleName();
     /**
@@ -32,39 +34,28 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
      */
     private RecipesFragment mFragment;
 
-    private SearchView mSearchView;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-    private View mProgresView;
+    private View mProgressView;
 
     private boolean isLoading;
 
-    private void configureActionBar(){
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setIcon(R.drawable.reyetas);
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipes);
 
-        configureActionBar();
-
-        mFragment = new RecipesFragment();
-        isLoading = false;
-
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction().add(R.id.container, mFragment).commit();
-        }
-
         configureMenu();
+        configureActionBar();
+        configureFragment(savedInstanceState);
+
         DropboxManager.getInstance().addObserver(RecipesActivity.this);
     }
+
+
 
     @Override
     protected void onStart() {
@@ -79,10 +70,19 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
 
         if (recipes == null || recipes.size() == 0)
         {
-            mProgresView = MyApplication.showProgressView(this, mProgresView);
+            mProgressView = MyApplication.showProgressView(this, mProgressView);
         }
 
-       loadRecipes(true);
+       loadRecipes(false);
+    }
+
+    private void configureFragment(Bundle savedInstanceState) {
+        mFragment = new RecipesFragment();
+        isLoading = false;
+
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction().add(R.id.container, mFragment).commit();
+        }
     }
 
     private void configureMenu() {
@@ -106,7 +106,7 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
 
 
         String[] values = new String[]{
-                "Sincronizar recetas"
+                "Comprobar si hay recetas nuevas", "Borar recetas y volver a cargar"
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, values);
@@ -114,16 +114,62 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mDrawerLayout.closeDrawer(mDrawerList);
-                loadRecipes(true);
+
+                if(position == 0)
+                {
+                    mDrawerLayout.closeDrawer(mDrawerList);
+                    loadRecipes(true);
+                }
+                else
+                {
+                    if(MyApplication.isConnected())
+                    {
+                        MyApplication.cleanAllRecipies();
+
+                        mDrawerLayout.closeDrawer(mDrawerList);
+                        loadRecipes(true);
+                    }
+                    else
+                    {
+                        Toast.makeText(RecipesActivity.this, "Tienes que estar conectado para poder recargar las recetas", Toast.LENGTH_LONG);
+                    }
+
+                }
             }
         });
     }
 
+    private void configureActionBar(){
+
+        if(isLoading)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            getSupportActionBar().setHomeButtonEnabled(false);
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+        else
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
+
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setIcon(R.drawable.reyetas);
+    }
+
+    /**
+     * Load the recipies
+     * @param forceLoad if {@code true}, It will try to load ignoring the limit of queries per day.
+     */
     private void loadRecipes(boolean forceLoad) {
         isLoading = true;
         invalidateOptionsMenu();
-        mProgresView = MyApplication.showProgressView(RecipesActivity.this, mProgresView);
+        configureActionBar();
+
+        mProgressView = MyApplication.showProgressView(RecipesActivity.this, mProgressView);
         DropboxManager.getInstance().loadRecipes(RecipesActivity.this, forceLoad);
     }
 
@@ -144,6 +190,11 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
         itemCancel.setVisible(isLoading);
         itemSearch.setVisible(!isLoading);
 
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnCloseListener(this);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -157,7 +208,6 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
             }
         }
         else if (item.getItemId() == R.id.action_search) {
-
             return true;
         }
         else if (item.getItemId() == R.id.action_cancel)
@@ -179,19 +229,6 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    private void setupSearchView(MenuItem searchItem) {
-
-        if (isAlwaysExpanded()) {
-            mSearchView.setIconifiedByDefault(false);
-        } else {
-            searchItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM
-                    | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-        }
-
-        mSearchView.setOnQueryTextListener(this);
-
-    }
-
     public boolean onQueryTextChange(String newText) {
         Log.d("Search","Query = " + newText);
         return false;
@@ -199,25 +236,18 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
 
     public boolean onQueryTextSubmit(String query) {
         Log.d("Search", "Query = " + query + " : submitted");
+        mFragment.applySearchQuery(query);
 
         return false;
     }
 
-//    @Override
-//    public boolean onMenuItemActionExpand(MenuItem item) {
-//        Log.d("*******","onMenuItemActionExpand");
-//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF000000));
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onMenuItemActionCollapse(MenuItem item) {
-//        //do what you want to when close the sesarchview
-//        //remember to return true;
-//        Log.d("*******","onMenuItemActionCollapse");
-//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.theme_color)));
-//        return true;
-//    }
+
+    @Override
+    public boolean onClose() {
+        Log.d("Search", "Close search");
+        mFragment.applySearchQuery("");
+        return false;
+    }
 
     protected boolean isAlwaysExpanded() {
         return false;
@@ -243,9 +273,10 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
 
     private void cancelLoadRequests() {
         DropboxManager.getInstance().cancelAllRequests();
-        MyApplication.hideProgressView(mProgresView);
+        MyApplication.hideProgressView(mProgressView);
         isLoading = false;
         invalidateOptionsMenu();
+        configureActionBar();
     }
 
 
@@ -255,8 +286,9 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
         boolean changed = (boolean) data;
 
         Log.d(TAG, "Recipes changed? " + changed);
-        MyApplication.hideProgressView(mProgresView);
+        MyApplication.hideProgressView(mProgressView);
         isLoading = false;
         invalidateOptionsMenu();
+        configureActionBar();
     }
 }

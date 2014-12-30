@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 
 import com.dd.CircularProgressButton;
 
@@ -19,6 +20,9 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.TreeMap;
+
+import recetas.sherpa.studio.com.recetas.data.RecipesManager;
+import recetas.sherpa.studio.com.recetas.utils.Utils;
 
 /**
  * Created by diego on 13/12/14.
@@ -41,6 +45,8 @@ public class MyApplication extends Application {
         if(!mydir.exists()) {
             mydir.mkdir();
         }
+
+        cleanRecipesCache();
 
         restoreHashMap();
     }
@@ -127,14 +133,20 @@ public class MyApplication extends Application {
        mHashMap.put(fileName,hash);
     }
 
+
+    public static void removeHashTable() {
+        mHashMap.clear();
+        storeHashMap();
+    }
+
     public static String getRecipesBaseDirecotry()
     {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
-    public static boolean isConnected(Context context) {
+    public static boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                mGeneralContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = null;
         if (connectivityManager != null) {
             networkInfo =
@@ -147,7 +159,7 @@ public class MyApplication extends Application {
     {
         if(mProgresView == null)
         {
-            mProgresView = LayoutInflater.from(context).inflate(R.layout.fragment_dropbox,null);
+            mProgresView = LayoutInflater.from(context).inflate(R.layout.include_progress_view,null);
             CircularProgressButton circluarProgress = (CircularProgressButton) mProgresView.findViewById(R.id.auth_button);
             circluarProgress.setIndeterminateProgressMode(true);
             circluarProgress.setProgress(50);
@@ -156,7 +168,10 @@ public class MyApplication extends Application {
             rootView.addView(mProgresView);
         }
 
-        mProgresView.setVisibility(View.VISIBLE);
+        AlphaAnimation animation1 = new AlphaAnimation(0.0f, 1.0f);
+        animation1.setDuration(500);
+        animation1.setFillAfter(true);
+        mProgresView.startAnimation(animation1);
 
 
 
@@ -166,6 +181,36 @@ public class MyApplication extends Application {
     public static void hideProgressView(View progressView)
     {
         if(progressView != null)
-            progressView.setVisibility(View.GONE);
+        {
+            AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.0f);
+            animation1.setDuration(500);
+            animation1.setFillAfter(true);
+            progressView.startAnimation(animation1);
+        }
+
+    }
+
+    public static void cleanAllRecipies()
+    {
+        cleanRecipesCache();
+        String baseDirectory = getRecipesBaseDirecotry();
+
+        String recipesFolderPath = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
+        Utils.deleteFile(recipesFolderPath);
+        File mydir = new File(recipesFolderPath);
+        mydir.mkdir();
+
+        MyApplication.removeHashTable();
+        RecipesManager.getInstance().cleanListRecipes();
+    }
+
+    public static void cleanRecipesCache() {
+        String baseDirectory = MyApplication.getRecipesBaseDirecotry();
+
+        String recipesFolderPathTemp = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux";
+        String recipesFolderPathTemp2 = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux_2";
+
+        Utils.deleteFile(recipesFolderPathTemp);
+        Utils.deleteFile(recipesFolderPathTemp2);
     }
 }

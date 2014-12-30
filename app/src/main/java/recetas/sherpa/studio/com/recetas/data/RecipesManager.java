@@ -38,6 +38,11 @@ public class RecipesManager {
         mListRecipes = list;
     }
 
+    public void cleanListRecipes()
+    {
+        mListRecipes.clear();
+    }
+
     public List<Recipe> getListReceipes() {
         return mListRecipes;
     }

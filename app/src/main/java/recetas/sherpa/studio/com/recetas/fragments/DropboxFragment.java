@@ -85,7 +85,7 @@ public class DropboxFragment extends Fragment implements DropboxListenerTask {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mRootView =  inflater.inflate(R.layout.fragment_dropbox, container, false);
+        mRootView =  inflater.inflate(R.layout.include_progress_view, container, false);
 
         mSubmit = (CircularProgressButton) mRootView.findViewById(R.id.auth_button);
         mSubmit.setIndeterminateProgressMode(true);

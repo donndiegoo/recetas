@@ -14,11 +14,8 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
 import com.etsy.android.grid.StaggeredGridView;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
-import com.nispok.snackbar.enums.SnackbarType;
-import com.nispok.snackbar.listeners.ActionClickListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -50,6 +47,8 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
     private FloatingActionsMenu     mAddButton;
 
     private List<Recipe>            mListRecipes;
+    private List<Recipe>            mListRecipesFiltered;
+
     private  RecipesAdapter         mAdapter;
 
     public RecipesFragment() {
@@ -62,9 +61,10 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
 
         RecipesManager.getInstance().loadRecipesFromCache();
         mListRecipes = RecipesManager.getInstance().getListReceipes();
+        mListRecipesFiltered = new ArrayList<>(mListRecipes);
 
         mListView = (StaggeredGridView) mRootView.findViewById(R.id.grid_view);
-        mAdapter = new RecipesAdapter(getActivity(),R.layout.item_recipe,mListRecipes);
+        mAdapter = new RecipesAdapter(getActivity(),R.layout.item_recipe,mListRecipesFiltered);
         mListView.setAdapter(mAdapter);
 
         mRootView.findViewById(R.id.container);
@@ -103,6 +103,33 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
         DropboxManager.getInstance().addObserver(this);
 
         return mRootView;
+    }
+
+    public void applySearchQuery(String text)
+    {
+        if(text.length() > 0)
+        {
+            mListRecipesFiltered.clear();
+
+            for (Recipe recipe : RecipesManager.getInstance().getListReceipes())
+            {
+                if(recipe.getTitle().toLowerCase().contains(text.toLowerCase()))
+                {
+                    mListRecipesFiltered.add(recipe);
+                }
+            }
+
+            mListRecipes = mListRecipesFiltered;
+
+        }
+        else
+        {
+            mListRecipes = RecipesManager.getInstance().getListReceipes();
+            mListRecipesFiltered.clear();
+            mListRecipesFiltered.addAll(mListRecipes);
+        }
+
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -196,22 +223,24 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
             {
                 Log.d(TAG, "List not empty, show snackbar");
 
-                SnackbarManager.show(
-                        Snackbar.with(getActivity().getApplicationContext()) // context
-                                .type(SnackbarType.MULTI_LINE) // Set is as a multi-line snackbar
-                                .text("Hay nuevas recetas. Deseas mostrar los cambios?") // text to display
-                                .actionLabel("Aceptar") // action button label
-                                .actionListener(new ActionClickListener() {
-                                    @Override
-                                    public void onActionClicked(Snackbar snackbar) {
-
+//                SnackbarManager.show(
+//                        Snackbar.with(getActivity()) // context
+//                                .type(SnackbarType.MULTI_LINE) // Set is as a multi-line snackbar
+//                                .text("Hay nuevas recetas. Deseas mostrar los cambios?") // text to display
+//                                .actionLabel("Aceptar") // action button label
+//                                .actionListener(new ActionClickListener() {
+//                                    @Override
+//                                    public void onActionClicked(Snackbar snackbar) {
                                         RecipesManager.getInstance().loadRecipesFromCache();
+                                        mListRecipes = RecipesManager.getInstance().getListReceipes();
+                                        mListRecipesFiltered.clear();
+                                        mListRecipesFiltered.addAll(mListRecipes);
                                         mAdapter.notifyDataSetChanged();
 
-                                    }
-                                }) // action button's ActionClickListener
-                                .swipeToDismiss(true)
-                        , this.getActivity()); // activity where it is displayed
+//                                    }
+//                                }) // action button's ActionClickListener
+//                                .swipeToDismiss(true)
+//                        , this.getActivity()); // activity where it is displayed
             }
 
 

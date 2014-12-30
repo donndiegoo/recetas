@@ -113,7 +113,7 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
     {
         mContext = context;
 
-        if(MyApplication.isConnected(context) && (ignoreLimitQueryPerDay || canMakeAnotherQueryToday()))
+        if(MyApplication.isConnected() && (ignoreLimitQueryPerDay || canMakeAnotherQueryToday()))
         {
             mTypeTask = TYPE_TASK.TASK_LOAD_RECIPES;
             doLogin(context);
@@ -130,7 +130,7 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
         String lastQueryString = MyPreferences.getLastRecipesQueryDate(MyApplication.mGeneralContext);
         SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMATTER);
         try {
-            Date convertedDate = convertedDate = dateFormat.parse(lastQueryString);
+            Date convertedDate = dateFormat.parse(lastQueryString);
 
             Calendar todayCalendar = Calendar.getInstance();
             long diff = todayCalendar.getTimeInMillis() - convertedDate.getTime();
@@ -385,7 +385,7 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
 
                 File file = new File(recipesFolderNameLocal);
                 if(file.exists()){
-                    deleteFile(recipesFolderNameLocal);
+                    Utils.deleteFile(recipesFolderNameLocal);
                 }
                 file.mkdir();
 
@@ -543,22 +543,6 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
         return !hash.equals(lastHash);
     }
 
-    private void deleteFile(String folderPath)
-    {
-        File dir = new File(folderPath);
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                deleteFile(children[i]);
-            }
-            dir.delete();
-        }
-        else
-        {
-            dir.delete();
-        }
-    }
-
     private void moveTemporaryRecipesToRealRecipes(List<String> listFilesNotModified) {
 
         String baseDirectory = MyApplication.getRecipesBaseDirecotry();
@@ -584,8 +568,8 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
                     Log.d(TAG, "file: " + name + " moved? " + renamed);
                 }
 
-                deleteFile(recipesFolderPathTemp);
-                deleteFile(recipesFolderPathTemp2);
+                Utils.deleteFile(recipesFolderPathTemp);
+                Utils.deleteFile(recipesFolderPathTemp2);
             }
         } // Rename original folder to temp2
 

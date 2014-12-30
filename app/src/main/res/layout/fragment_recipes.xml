@@ -87,6 +87,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="recetas.sherpa.studio.com.recetas.fragments.DropboxFragment"
-        tools:layout="@layout/fragment_dropbox" />-->
+        tools:layout="@layout/include_progress_view" />-->
 
 </RelativeLayout>
