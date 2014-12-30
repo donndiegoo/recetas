@@ -53,7 +53,7 @@ public class RecipesManager {
 
             String baseDirectory = MyApplication.getRecipesBaseDirecotry();
 
-            String recipesFolderNameLocal = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
+            String recipesFolderNameLocal = baseDirectory + "/" + MyApplication.mFolderSelected;
             File recipesFolder = new File(recipesFolderNameLocal);
 
 
@@ -128,10 +128,10 @@ public class RecipesManager {
         }
     }
 
-    public void createRecipe(RecipeStepByStep mTemporaryRecipe) {
+    public void createRecipe(Recipe mTemporaryRecipe) {
         String baseDirectory = MyApplication.getRecipesBaseDirecotry();
 
-        String recipesFolderNameLocal = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
+        String recipesFolderNameLocal = baseDirectory + "/" + MyApplication.mFolderSelected;
 
         File newRecipeDirectory = new File(recipesFolderNameLocal + "/" + mTemporaryRecipe.getTitle());
         newRecipeDirectory.mkdir();

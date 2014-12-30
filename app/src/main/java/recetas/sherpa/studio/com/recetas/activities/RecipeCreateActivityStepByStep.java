@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import recetas.sherpa.studio.com.recetas.R;
+import recetas.sherpa.studio.com.recetas.data.RecipeStepByStep;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 
 public class RecipeCreateActivityStepByStep extends RecipeCreateActivity {
@@ -43,6 +44,11 @@ public class RecipeCreateActivityStepByStep extends RecipeCreateActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        if(mTemporaryRecipe == null)
+        {
+            mTemporaryRecipe = new RecipeStepByStep();
+        }
     }
 
     @Override
@@ -82,8 +88,8 @@ public class RecipeCreateActivityStepByStep extends RecipeCreateActivity {
 
         super.guardarReceta();
 
-        mTemporaryRecipe.parseListIngridients(mIngridients.getText().toString());
-        mTemporaryRecipe.parseListInstructions(mInstructions.getText().toString());
+        ((RecipeStepByStep)mTemporaryRecipe).parseListIngridients(mIngridients.getText().toString());
+        ((RecipeStepByStep)mTemporaryRecipe).parseListInstructions(mInstructions.getText().toString());
 
         RecipesManager.getInstance().createRecipe(mTemporaryRecipe);
 

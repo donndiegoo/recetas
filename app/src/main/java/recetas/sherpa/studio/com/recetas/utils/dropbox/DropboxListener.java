@@ -1,4 +1,4 @@
-package recetas.sherpa.studio.com.recetas.utils;
+package recetas.sherpa.studio.com.recetas.utils.dropbox;
 
 /**
  * Created by diego on 13/12/14.

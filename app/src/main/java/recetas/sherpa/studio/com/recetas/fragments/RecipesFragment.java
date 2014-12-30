@@ -25,7 +25,7 @@ import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivityPictures
 import recetas.sherpa.studio.com.recetas.activities.RecipeCreateActivityStepByStep;
 import recetas.sherpa.studio.com.recetas.activities.RecipeDetailActivity;
 import recetas.sherpa.studio.com.recetas.adapters.RecipesAdapter;
-import recetas.sherpa.studio.com.recetas.utils.DropboxManager;
+import recetas.sherpa.studio.com.recetas.utils.dropbox.DropboxManager;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 import recetas.sherpa.studio.com.recetas.widgets.FloatingActinButtons.FloatingActionsMenu;
@@ -217,6 +217,9 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
             {
                 Log.d(TAG, "List empty");
                 RecipesManager.getInstance().loadRecipesFromCache();
+                mListRecipes = RecipesManager.getInstance().getListReceipes();
+                mListRecipesFiltered.clear();
+                mListRecipesFiltered.addAll(mListRecipes);
                 mAdapter.notifyDataSetChanged();
             }
             else

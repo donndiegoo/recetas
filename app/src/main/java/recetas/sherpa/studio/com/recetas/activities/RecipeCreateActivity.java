@@ -12,7 +12,10 @@ import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
 import me.drakeet.materialdialog.MaterialDialog;
+import recetas.sherpa.studio.com.recetas.Constants;
+import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
+import recetas.sherpa.studio.com.recetas.data.Recipe;
 import recetas.sherpa.studio.com.recetas.data.RecipeStepByStep;
 import recetas.sherpa.studio.com.recetas.widgets.FlipAnimation.AnimationFactory;
 
@@ -20,13 +23,13 @@ public class RecipeCreateActivity extends ActionBarActivity {
 
     private static final int CAMERA_REQUEST = 1888;
 
-    protected RecipeStepByStep mTemporaryRecipe;
+    protected Recipe mTemporaryRecipe;
     protected boolean mError;
 
     // VIEWS
-    private ImageView mImage1;
-    private Bitmap mBitmap1;
-    private ViewAnimator mViewAnimator1;
+    private ImageView       mImageViewHeaderPicture;
+    private Bitmap          mBitmapHeaderPicture;
+    private ViewAnimator    mViewAnimatorHeaderPicture;
 
     private EditText mTitle;
 
@@ -39,26 +42,23 @@ public class RecipeCreateActivity extends ActionBarActivity {
 
     protected void setUpInterface()
     {
-        mImage1 = (ImageView) findViewById(R.id.photos_picker_photo_1);
-        mViewAnimator1 = (ViewAnimator)this.findViewById(R.id.viewFlipper_1);
+        mImageViewHeaderPicture = (ImageView) findViewById(R.id.photos_picker_photo_1);
+        mViewAnimatorHeaderPicture = (ViewAnimator)this.findViewById(R.id.viewFlipper_1);
         mTitle = (EditText) findViewById(R.id.editText_title);
 
         /**
          * Bind a click listener to initiate the flip transitions
          */
-        mViewAnimator1.setOnClickListener(new View.OnClickListener() {
+        mViewAnimatorHeaderPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // This is all you need to do to 3D flip
-                if(mBitmap1 == null)
-                {
+                if (mBitmapHeaderPicture == null) {
                     Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                }
-                else
-                {
-                    AnimationFactory.flipTransition(mViewAnimator1, AnimationFactory.FlipDirection.RIGHT_LEFT);
-                    mBitmap1 = null;
+                } else {
+                    AnimationFactory.flipTransition(mViewAnimatorHeaderPicture, AnimationFactory.FlipDirection.RIGHT_LEFT);
+                    mBitmapHeaderPicture = null;
                 }
             }
 
@@ -69,22 +69,15 @@ public class RecipeCreateActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
 
-        if(mTemporaryRecipe == null)
-        {
-            mTemporaryRecipe = new RecipeStepByStep();
-        }
-        else
-        {
-            mTemporaryRecipe.setTitle(mTitle.getText().toString());
-        }
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            mImage1.setImageBitmap(photo);
-            AnimationFactory.flipTransition(mViewAnimator1, AnimationFactory.FlipDirection.LEFT_RIGHT);
-            mBitmap1 = photo;
+            mImageViewHeaderPicture.setImageBitmap(photo);
+            AnimationFactory.flipTransition(mViewAnimatorHeaderPicture, AnimationFactory.FlipDirection.LEFT_RIGHT);
+            mBitmapHeaderPicture = photo;
         }
     }
 
@@ -120,10 +113,11 @@ public class RecipeCreateActivity extends ActionBarActivity {
     }
 
     protected void guardarReceta() {
-
         mError = false;
-
         mTemporaryRecipe.setTitle(mTitle.getText().toString());
+
+        String baseDirectory = MyApplication.getRecipesBaseDirecotry();
+        String recipeFolderPathTemp = baseDirectory + "/" + MyApplication.mFolderSelected + "_creation_temp";
     }
 
     protected void showDialog(String title, String message)

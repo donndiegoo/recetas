@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
 import recetas.sherpa.studio.com.recetas.R;
+import recetas.sherpa.studio.com.recetas.data.Recipe;
+import recetas.sherpa.studio.com.recetas.data.RecipeStepByStep;
+import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 import recetas.sherpa.studio.com.recetas.widgets.FlipAnimation.AnimationFactory;
 
 public class RecipeCreateActivityPictures extends RecipeCreateActivity {
@@ -147,7 +150,10 @@ public class RecipeCreateActivityPictures extends RecipeCreateActivity {
     protected void onStart() {
         super.onStart();
 
-
+        if(mTemporaryRecipe == null)
+        {
+            mTemporaryRecipe = new Recipe();
+        }
     }
 
     @Override
@@ -182,5 +188,19 @@ public class RecipeCreateActivityPictures extends RecipeCreateActivity {
         }
         else
             super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void guardarReceta() {
+
+        super.guardarReceta();
+
+
+
+        RecipesManager.getInstance().createRecipe(mTemporaryRecipe);
+
+
+        super.showDialog("Felicitaciones!", "Has creado una nueva receta !");
+
     }
 }

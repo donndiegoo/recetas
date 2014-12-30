@@ -2,7 +2,6 @@ package recetas.sherpa.studio.com.recetas.fragments;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.adapters.RecipeDetailTabsAdapter;
@@ -13,7 +12,7 @@ import recetas.sherpa.studio.com.recetas.widgets.SlidingTab.SlidingTabsBasicFrag
 /**
  * Created by diego on 15/12/14.
  */
-public class RecipeDetailTabsFragment extends SlidingTabsBasicFragment{
+public class RecipeDetailStepByStepFragment extends SlidingTabsBasicFragment{
 
 
 
@@ -23,9 +22,9 @@ public class RecipeDetailTabsFragment extends SlidingTabsBasicFragment{
     }
 
 
-    public static RecipeDetailTabsFragment newInstance(RecipeStepByStep recipe)
+    public static RecipeDetailStepByStepFragment newInstance(RecipeStepByStep recipe)
     {
-        RecipeDetailTabsFragment fragment = new RecipeDetailTabsFragment();
+        RecipeDetailStepByStepFragment fragment = new RecipeDetailStepByStepFragment();
         fragment.setRecipe(recipe);
         return fragment;
     }

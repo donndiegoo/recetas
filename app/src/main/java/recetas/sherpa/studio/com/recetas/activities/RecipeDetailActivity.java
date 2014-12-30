@@ -27,7 +27,7 @@ import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailBaseFragment;
 import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailExternalAppFragment;
 import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailImagesFragment;
-import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailTabsFragment;
+import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailStepByStepFragment;
 import recetas.sherpa.studio.com.recetas.fragments.RecipeDetailWebFragment;
 
 public class RecipeDetailActivity extends ActionBarActivity {
@@ -129,7 +129,7 @@ public class RecipeDetailActivity extends ActionBarActivity {
         else if(mRecipe instanceof RecipeStepByStep)
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            mFragment = RecipeDetailTabsFragment.newInstance((RecipeStepByStep) mRecipe);
+            mFragment = RecipeDetailStepByStepFragment.newInstance((RecipeStepByStep) mRecipe);
         }
         else
         {

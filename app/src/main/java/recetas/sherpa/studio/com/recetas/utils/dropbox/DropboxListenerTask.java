@@ -1,4 +1,4 @@
-package recetas.sherpa.studio.com.recetas.utils;
+package recetas.sherpa.studio.com.recetas.utils.dropbox;
 public interface DropboxListenerTask
 {
     public void onChangesTaskFinished(Object ... result);

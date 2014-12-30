@@ -24,7 +24,7 @@ import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 import recetas.sherpa.studio.com.recetas.fragments.RecipesFragment;
-import recetas.sherpa.studio.com.recetas.utils.DropboxManager;
+import recetas.sherpa.studio.com.recetas.utils.dropbox.DropboxManager;
 
 public class RecipesActivity extends ActionBarActivity implements  SearchView.OnQueryTextListener, SearchView.OnCloseListener, Observer{
 

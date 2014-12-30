@@ -3,6 +3,8 @@ package recetas.sherpa.studio.com.recetas.utils;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
+import recetas.sherpa.studio.com.recetas.Constants;
+
 public class MyPreferences
 {
 	public static final String SETTINGS_NAME = "settings";
@@ -18,6 +20,6 @@ public class MyPreferences
 
 	public static String getLastRecipesQueryDate(Context context)
 	{
-		return context.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE).getString(LAST_RECIPES_QUERY, "2015/01/06 00:00:00");
+		return context.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE).getString(LAST_RECIPES_QUERY, Constants.DATE_ORIGIN);
 	}
 }

@@ -1,4 +1,4 @@
-package recetas.sherpa.studio.com.recetas.utils;
+package recetas.sherpa.studio.com.recetas.utils.dropbox;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,6 +30,8 @@ import recetas.sherpa.studio.com.recetas.Constants;
 import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
+import recetas.sherpa.studio.com.recetas.utils.MyPreferences;
+import recetas.sherpa.studio.com.recetas.utils.Utils;
 
 /**
  * Created by diego on 27/12/14.
@@ -134,7 +136,9 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
 
             Calendar todayCalendar = Calendar.getInstance();
             long diff = todayCalendar.getTimeInMillis() - convertedDate.getTime();
-            long diffMinutes = diff / (60 * 1000) % 60;
+            long diffMinutes = diff / (60 * 1000);
+
+
 
             if(diffMinutes >= Constants.MIN_INTERVAL_RECIPES_QUERY)
             {
@@ -328,7 +332,7 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
         @Override
         protected Object doInBackground(Object[] params) {
             try {
-                String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
+                String recipesFolderNameRemote = "/" + mContext.getResources().getString(R.string.app_name) + "/" + MyApplication.mFolderSelected;
                 mRecipesContent = mApi.metadata(recipesFolderNameRemote, 1000, null, true, null);
                 //mHasChanged = hasRecipesChanged(Constants.RECIPES_DIRECTORY, mRecipesContent.hash); //FIXME delete Task and add behaviour inside TaskRescipes
                 mHasChanged = true;
@@ -380,8 +384,8 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
 
                 String baseDirectory = MyApplication.getRecipesBaseDirecotry();
 
-                String recipesFolderNameLocal = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux";
-                String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
+                String recipesFolderNameLocal = baseDirectory + "/" + MyApplication.mFolderSelected + "_aux";
+                String recipesFolderNameRemote = "/" + mContext.getResources().getString(R.string.app_name) + "/" + MyApplication.mFolderSelected;
 
                 File file = new File(recipesFolderNameLocal);
                 if(file.exists()){
@@ -547,9 +551,9 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
 
         String baseDirectory = MyApplication.getRecipesBaseDirecotry();
 
-        String recipesFolderPath = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
-        String recipesFolderPathTemp = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux";
-        String recipesFolderPathTemp2 = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux_2";
+        String recipesFolderPath = baseDirectory + "/" + MyApplication.mFolderSelected;
+        String recipesFolderPathTemp = baseDirectory + "/" + MyApplication.mFolderSelected + "_aux";
+        String recipesFolderPathTemp2 = baseDirectory + "/" + MyApplication.mFolderSelected + "_aux_2";
 
         File recipesFolder = new File(recipesFolderPath);
         File recipesFolderTemp = new File(recipesFolderPathTemp);

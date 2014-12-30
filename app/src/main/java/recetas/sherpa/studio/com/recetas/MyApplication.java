@@ -33,6 +33,8 @@ public class MyApplication extends Application {
 
     public static Map<String,String> mHashMap;
 
+    public static String mFolderSelected = "Recetas Familia";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -41,7 +43,13 @@ public class MyApplication extends Application {
 
         String baseDirectory = MyApplication.getRecipesBaseDirecotry();
 
-        File mydir = new File(baseDirectory + "/" + Constants.RECIPES_DIRECTORY); //Creating an internal dir;
+        File baseDirectoryFile = new File(baseDirectory);
+        if(!baseDirectoryFile.exists())
+        {
+            baseDirectoryFile.mkdir();
+        }
+
+        File mydir = new File(baseDirectory + "/" + mFolderSelected); //Creating an internal dir;
         if(!mydir.exists()) {
             mydir.mkdir();
         }
@@ -141,7 +149,7 @@ public class MyApplication extends Application {
 
     public static String getRecipesBaseDirecotry()
     {
-        return Environment.getExternalStorageDirectory().getAbsolutePath();
+        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mGeneralContext.getResources().getString(R.string.app_name);
     }
 
     public static boolean isConnected() {
@@ -195,7 +203,7 @@ public class MyApplication extends Application {
         cleanRecipesCache();
         String baseDirectory = getRecipesBaseDirecotry();
 
-        String recipesFolderPath = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
+        String recipesFolderPath = baseDirectory + "/" + mFolderSelected;
         Utils.deleteFile(recipesFolderPath);
         File mydir = new File(recipesFolderPath);
         mydir.mkdir();
@@ -207,8 +215,8 @@ public class MyApplication extends Application {
     public static void cleanRecipesCache() {
         String baseDirectory = MyApplication.getRecipesBaseDirecotry();
 
-        String recipesFolderPathTemp = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux";
-        String recipesFolderPathTemp2 = baseDirectory + "/" + Constants.RECIPES_DIRECTORY + "_aux_2";
+        String recipesFolderPathTemp = baseDirectory + "/" + mFolderSelected + "_aux";
+        String recipesFolderPathTemp2 = baseDirectory + "/" + mFolderSelected + "_aux_2";
 
         Utils.deleteFile(recipesFolderPathTemp);
         Utils.deleteFile(recipesFolderPathTemp2);

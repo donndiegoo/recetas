@@ -63,13 +63,13 @@ public class Recipe {
     public String getRecipeDirectoryPathLocal()
     {
         String baseDirectory = MyApplication.getRecipesBaseDirecotry();
-        String recipesFolderNameLocal = baseDirectory + "/" + Constants.RECIPES_DIRECTORY;
+        String recipesFolderNameLocal = baseDirectory + "/" + MyApplication.mFolderSelected;
         return recipesFolderNameLocal + "/" + getTitle();
     }
 
     public String getRecipeDirectoryPathRemote()
     {
-        String recipesFolderNameRemote = "/" + Constants.RECIPES_DIRECTORY;
+        String recipesFolderNameRemote = "/" + MyApplication.mFolderSelected;
         return recipesFolderNameRemote + "/" + getTitle();
     }
 }
