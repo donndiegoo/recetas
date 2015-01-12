@@ -185,15 +185,8 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent resultData) {
 
-        // The ACTION_OPEN_DOCUMENT intent was sent with the request code
-        // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
-        // response to some other intent, and the code below shouldn't run at all.
 
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            // The document selected by the user won't be returned in the intent.
-            // Instead, a URI to that document will be contained in the return intent
-            // provided to this method as a parameter.
-            // Pull that URI using resultData.getData().
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
@@ -247,6 +240,22 @@ public class RecipesFragment extends Fragment implements FloatingActionsMenuButt
             }
 
 
+        }
+    }
+
+    public boolean onBackPressed() {
+        if(mAddButton.isExpanded())
+        {
+            mAddButton.collapse();
+            AlphaAnimation animation1 = new AlphaAnimation(0.85f, 0.0f);
+            animation1.setDuration(500);
+            animation1.setFillAfter(true);
+            mBlurImage.startAnimation(animation1);
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 }

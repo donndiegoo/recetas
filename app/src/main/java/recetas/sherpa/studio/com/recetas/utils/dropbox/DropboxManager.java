@@ -30,6 +30,7 @@ import recetas.sherpa.studio.com.recetas.Constants;
 import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
+import recetas.sherpa.studio.com.recetas.data.RecipesManager;
 import recetas.sherpa.studio.com.recetas.utils.MyPreferences;
 import recetas.sherpa.studio.com.recetas.utils.Utils;
 
@@ -66,10 +67,13 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
 
     private AsyncTask                           mAsyncTaskRecipes;
     private AsyncTask                           mAsyncTaskChanges;
+    private AsyncTask                           mAsyncTaskUpload;
 
     private Activity                            mContext;
 
     private TYPE_TASK                           mTypeTask;
+
+    private Recipe                              mRecipeToUpload;
 
 
 
@@ -126,6 +130,21 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
         }
     }
 
+    public void saveRecipe(Activity context, Recipe recipe)
+    {
+        mContext = context;
+        if(MyApplication.isConnected())
+        {
+            mTypeTask = TYPE_TASK.TASK_UPLOAD_RECIPE;
+            doLogin(context);
+        }
+        else
+        {
+            refreshRecipes(false);
+        }
+
+    }
+
     private boolean canMakeAnotherQueryToday() {
         boolean can = false;
 
@@ -162,15 +181,7 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
         if(session.isLinked())
         {
             Log.d(TAG, "session already linked");
-            if(mTypeTask == TYPE_TASK.TASK_LOAD_RECIPES)
-            {
-                mAsyncTaskChanges = new TaskChanges(this);
-                mAsyncTaskChanges.execute();
-            }
-            else if(mTypeTask == TYPE_TASK.TASK_UPLOAD_RECIPE)
-            {
-
-            }
+            executePendingTask();
         }
         else if (session.authenticationSuccessful()) {
             Log.d(TAG, "authentication successful");
@@ -179,19 +190,11 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
                 session.finishAuthentication();
                 // Store it locally in our app for later use
                 storeAuth(session);
-
-                if(mTypeTask == TYPE_TASK.TASK_LOAD_RECIPES)
-                {
-                    mAsyncTaskChanges = new TaskChanges(this);
-                    mAsyncTaskChanges.execute();
-                }
-                else if(mTypeTask == TYPE_TASK.TASK_UPLOAD_RECIPE)
-                {
-
-                }
+                executePendingTask();
 
             } catch (IllegalStateException e) {
-                showToast("Couldn't authenticate with Dropbox: " + e.getLocalizedMessage());
+                showToast("Error en Dropbox: " + e.getLocalizedMessage());
+                refreshRecipes(false);
             }
         }
         else {
@@ -204,6 +207,8 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
             }
         }
     }
+
+
 
     private AndroidAuthSession buildSession() {
         AppKeyPair appKeyPair = new AppKeyPair(mApiKey, mApiSecret);
@@ -491,24 +496,30 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
     }
 
 
+    /***********************************************************************************************
+     *  UPLOAD RECIPE
+     ***********************************************************************************************/
+
     private class TaskUploadRecipe extends AsyncTask<Recipe,Object,Object>{
 
 
         @Override
         protected Object doInBackground(Recipe... params) {
 
-            Recipe recipe = params[0];
+            Recipe recipe = mRecipeToUpload;
 
             try
             {
-                // 1. Create Recipe directory
-                File localRecipeDirectory = new File(recipe.getRecipeDirectoryPathLocal());
+                List<File> listFilesToUpload = RecipesManager.getInstance().createRecipe(recipe);
 
-                FileInputStream inputStream = new FileInputStream(localRecipeDirectory);
-                DropboxAPI.Entry response = mApi.putFile(recipe.getRecipeDirectoryPathRemote(), inputStream,
-                        localRecipeDirectory.length(), null, null);
+                for(File file : listFilesToUpload)
+                {
+                    FileInputStream inputStream = new FileInputStream(file);
+                    DropboxAPI.Entry response = mApi.putFile(recipe.getRecipeDirectoryPathRemote(), inputStream, file.length(), null, null);
+                    Log.d(TAG,response.rev);
+                }
 
-               // if(response.rev)
+
 
             }
             catch (IOException e)
@@ -536,6 +547,19 @@ public class DropboxManager extends Observable implements DropboxListenerTask {
     /*****************************************************************************************************************
      PRIVATE METHODS
      *****************************************************************************************************************/
+
+    private void executePendingTask() {
+        if(mTypeTask == TYPE_TASK.TASK_LOAD_RECIPES)
+        {
+            mAsyncTaskChanges = new TaskChanges(this);
+            mAsyncTaskChanges.execute();
+        }
+        else if(mTypeTask == TYPE_TASK.TASK_UPLOAD_RECIPE)
+        {
+            mAsyncTaskUpload = new TaskUploadRecipe();
+            mAsyncTaskUpload.execute();
+        }
+    }
 
     private void showToast(String msg) {
         Toast error = Toast.makeText(MyApplication.mGeneralContext, msg, Toast.LENGTH_LONG);

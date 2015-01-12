@@ -11,6 +11,7 @@ import android.widget.EditText;
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.RecipeStepByStep;
 import recetas.sherpa.studio.com.recetas.data.RecipesManager;
+import recetas.sherpa.studio.com.recetas.utils.dropbox.DropboxManager;
 
 public class RecipeCreateActivityStepByStep extends RecipeCreateActivity {
 
@@ -73,7 +74,7 @@ public class RecipeCreateActivityStepByStep extends RecipeCreateActivity {
             }
             else if(super.onOptionsItemSelected(item))
             {
-                guardarReceta();
+                saveRecipe();
             }
 
 
@@ -84,15 +85,16 @@ public class RecipeCreateActivityStepByStep extends RecipeCreateActivity {
     }
 
     @Override
-    protected void guardarReceta() {
+    protected void saveRecipe() {
 
-        super.guardarReceta();
+        mTemporaryRecipe = new RecipeStepByStep();
 
         ((RecipeStepByStep)mTemporaryRecipe).parseListIngridients(mIngridients.getText().toString());
         ((RecipeStepByStep)mTemporaryRecipe).parseListInstructions(mInstructions.getText().toString());
 
-        RecipesManager.getInstance().createRecipe(mTemporaryRecipe);
+        super.saveRecipe();
 
+        DropboxManager.getInstance().saveRecipe(this, mTemporaryRecipe);
 
         super.showDialog("Felicitaciones!", "Has creado una nueva receta !");
 

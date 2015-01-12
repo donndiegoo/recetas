@@ -128,14 +128,20 @@ public class RecipesManager {
         }
     }
 
-    public void createRecipe(Recipe mTemporaryRecipe) {
+    public List<File> createRecipe(Recipe mTemporaryRecipe) {
+
+        List<File> listFilesCreated = new ArrayList<>();
+
+        // Base directory
         String baseDirectory = MyApplication.getRecipesBaseDirecotry();
-
         String recipesFolderNameLocal = baseDirectory + "/" + MyApplication.mFolderSelected;
-
         File newRecipeDirectory = new File(recipesFolderNameLocal + "/" + mTemporaryRecipe.getTitle());
         newRecipeDirectory.mkdir();
+        listFilesCreated.add(newRecipeDirectory);
+
+        //TODO what do we do with the bitmaps?
 
 
+        return listFilesCreated;
     }
 }

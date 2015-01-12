@@ -265,10 +265,11 @@ public class RecipesActivity extends ActionBarActivity implements  SearchView.On
            cancelLoadRequests();
         }
         else{
-            super.onBackPressed();
+            if(mFragment.onBackPressed())
+            {
+                super.onBackPressed();
+            }
         }
-
-
     }
 
     private void cancelLoadRequests() {

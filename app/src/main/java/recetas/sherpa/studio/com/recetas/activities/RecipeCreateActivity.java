@@ -11,12 +11,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.MessageFormat;
+
 import me.drakeet.materialdialog.MaterialDialog;
 import recetas.sherpa.studio.com.recetas.Constants;
 import recetas.sherpa.studio.com.recetas.MyApplication;
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
 import recetas.sherpa.studio.com.recetas.data.RecipeStepByStep;
+import recetas.sherpa.studio.com.recetas.utils.Utils;
 import recetas.sherpa.studio.com.recetas.widgets.FlipAnimation.AnimationFactory;
 
 public class RecipeCreateActivity extends ActionBarActivity {
@@ -112,12 +118,11 @@ public class RecipeCreateActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void guardarReceta() {
+    protected void saveRecipe() {
         mError = false;
+
         mTemporaryRecipe.setTitle(mTitle.getText().toString());
 
-        String baseDirectory = MyApplication.getRecipesBaseDirecotry();
-        String recipeFolderPathTemp = baseDirectory + "/" + MyApplication.mFolderSelected + "_creation_temp";
     }
 
     protected void showDialog(String title, String message)

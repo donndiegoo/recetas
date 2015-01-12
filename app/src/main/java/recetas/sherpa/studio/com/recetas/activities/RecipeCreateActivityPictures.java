@@ -11,8 +11,7 @@ import android.widget.ViewAnimator;
 
 import recetas.sherpa.studio.com.recetas.R;
 import recetas.sherpa.studio.com.recetas.data.Recipe;
-import recetas.sherpa.studio.com.recetas.data.RecipeStepByStep;
-import recetas.sherpa.studio.com.recetas.data.RecipesManager;
+import recetas.sherpa.studio.com.recetas.utils.dropbox.DropboxManager;
 import recetas.sherpa.studio.com.recetas.widgets.FlipAnimation.AnimationFactory;
 
 public class RecipeCreateActivityPictures extends RecipeCreateActivity {
@@ -191,16 +190,16 @@ public class RecipeCreateActivityPictures extends RecipeCreateActivity {
     }
 
     @Override
-    protected void guardarReceta() {
+    protected void saveRecipe() {
 
-        super.guardarReceta();
+        mTemporaryRecipe = new Recipe();
+
+        super.saveRecipe();
+
+        //DropboxManager.getInstance().saveRecipe(this, mTemporaryRecipe);
 
 
-
-        RecipesManager.getInstance().createRecipe(mTemporaryRecipe);
-
-
-        super.showDialog("Felicitaciones!", "Has creado una nueva receta !");
+        super.showDialog("Error!", "Todavia no he terminado esta funcionalidad");
 
     }
 }
